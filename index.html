@@ -12,6 +12,7 @@
 .data-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:.55rem;align-items:end;margin-bottom:.75rem}.data-form label{margin:0;min-width:0}.data-form input{width:100%;min-width:0}.nutrition-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:.6rem}.nutrition-stats div{border:1px solid var(--line);background:#171717;border-radius:.65rem;padding:.75rem}.nutrition-stats dt{color:#bdbdbd}.nutrition-stats dd{margin:0;font-size:1.22rem;font-weight:700}#progressChart{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:.65rem;margin-bottom:1rem;background:#0c0c0c}#measureHistory button{margin:.2rem}.equipment-note{margin-bottom:.75rem}
 #warmupSteps{padding-left:1.3rem}#warmupSteps li{padding:.45rem 0}.warmup-photos{max-width:29rem}
 .progress-plots{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,24rem),1fr));gap:.8rem}.progress-plots canvas{display:block;width:100%;height:auto;background:#0c0c0c;border:1px solid var(--line);border-radius:.65rem}.progress-plots h4{margin:.3rem 0}.progress-session{margin:.5rem 0;padding:.65rem}.progress-session ul{padding-left:1.1rem}.progress-session button{margin:.35rem 0}.progress-session li{margin-bottom:.5rem}
+.recipe-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr));gap:.8rem;margin:.75rem 0 1.25rem}.recipe-card{padding:0;border:1px solid var(--line);border-radius:.8rem;overflow:hidden;background:#171717}.meal-photo{width:100%;aspect-ratio:1;background-image:url('./menu-comidas.jpg');background-repeat:no-repeat;background-size:300% 200%}.meal-photo-0{background-position:0% 0%}.meal-photo-1{background-position:50% 0%}.meal-photo-2{background-position:100% 0%}.meal-photo-3{background-position:0% 100%}.meal-photo-4{background-position:50% 100%}.meal-photo-5{background-position:100% 100%}.recipe-copy{padding:.85rem}.recipe-copy h4{margin:0 0 .45rem}.recipe-copy details{padding:.65rem;margin-bottom:0}.shop-days{max-width:15rem}.shopping-list{list-style:none;padding-left:0;columns:2;column-gap:1.4rem}.shopping-list li{break-inside:avoid}.shopping-list label{display:flex;align-items:center;gap:.55rem;margin:0}.shopping-list input{flex:none;accent-color:var(--accent)}@media(max-width:550px){.shopping-list{columns:1}}
 </style>
 <main>
 <header><h1>Mi entrenamiento</h1><p>Organiza tus rutinas y lleva el registro de tus sesiones.</p></header>
@@ -92,14 +93,64 @@
 <h3>Empieza con un superávit pequeño</h3>
 <p>Si tu peso lleva unas dos semanas estable y quieres priorizar ganar músculo, prueba añadir alrededor del <strong>5 % sobre tu ingesta de mantenimiento</strong>. Por ejemplo, si mantienes tu peso con 2.300 kcal, serían unas 115 kcal extra al día. Si no cuentas calorías, empieza con una porción pequeña adicional, como una arepa pequeña o un vaso de leche. Si tu peso ya sube lentamente y tus cargas mejoran, puedes mantener las porciones.</p>
 <p>Compara el promedio semanal de peso, la cintura y tu rendimiento durante dos o tres semanas. Si el peso sigue estable y quieres subir, añade un poco de comida. Si la cintura sube rápido, reduce el extra. En un ensayo pequeño con personas entrenadas, ganar peso más rápido tendió a aumentar sobre todo el grosor de los pliegues cutáneos. <a href="https://pubmed.ncbi.nlm.nih.gov/37914977/">Ensayo sobre superávit y entrenamiento</a></p>
-<h3>Qué comer durante el día</h3>
-<p>Reparte la proteína entre tres o cuatro comidas. Prueba huevos y yogur con avena en el desayuno, pollo o lentejas con arroz y verduras al almuerzo, y una cena con pescado, huevos o tofu. Incluye frutas, verduras y fuentes de grasa como aguacate, nueces o aceite de oliva.</p>
-<h3>Antes y después de las pesas</h3>
-<div class="meal-guide">
-<p><strong>5:00–6:00 p. m. · Comida previa</strong><br>Arroz, papa o arepa con pollo, huevos, atún o yogur. Elige una porción que toleres bien y toma agua.</p>
-<p><strong>6:15–6:40 p. m. · Merienda opcional</strong><br>Si llegas con hambre o han pasado varias horas desde que comiste, prueba banano, yogur o tostada. Para este horario, mi recomendación es <strong>0 mg de cafeína como preentreno</strong>. Lleva agua y bebe según la sed durante la sesión.</p>
-<p><strong>8:15–9:00 p. m. · Cena, según cuándo termines</strong><br>Combina una fuente de proteína con carbohidratos y verduras. Por ejemplo, pescado con papa y ensalada, pollo con arroz y verduras o lentejas con arroz y huevo. Puedes apuntar a 20–40 g de proteína en la comida. La proteína total del día importa más que cenar a una hora exacta.</p>
+<h3>Menú para un día de entrenamiento</h3>
+<p>Usa la avena, el pollo con arroz, el yogur con fruta y el pescado con papa como base. Las versiones con arepa y lentejas sirven para variar. Los gramos de proteína por plato son aproximados y cambian según la marca y los ingredientes. Las imágenes son referencias generadas de los platos.</p>
+<div class="recipe-grid">
+<article class="recipe-card">
+<div class="meal-photo meal-photo-0" role="img" aria-label="Avena con yogur y banano"></div>
+<div class="recipe-copy"><p class="muted">Desayuno · 10 min</p><h4>Avena con yogur y banano</h4><p>25–32 g de proteína aprox.</p>
+<details><summary>Ingredientes y preparación</summary><p><strong>Para una porción.</strong> 60 g de avena, 150 ml de leche, 200 g de yogur griego natural, 1 banano y canela al gusto.</p>
+<ol><li>Cocina la avena con la leche y un chorrito de agua a fuego medio, revolviendo durante 5–7 minutos.</li><li>Deja enfriar unos minutos y mezcla con el yogur. Sirve con banano en rodajas y canela.</li></ol></details></div>
+</article>
+<article class="recipe-card">
+<div class="meal-photo meal-photo-1" role="img" aria-label="Arepa con huevos y aguacate"></div>
+<div class="recipe-copy"><p class="muted">Desayuno alternativo · 12 min</p><h4>Arepa con huevos y aguacate</h4><p>Acompaña con yogur si quieres sumar proteína.</p>
+<details><summary>Ingredientes y preparación</summary><p><strong>Para una porción.</strong> 1 arepa mediana, 2 huevos, ¼ de aguacate, tomate al gusto y 150 g de yogur natural alto en proteína como acompañamiento.</p>
+<ol><li>Asa la arepa en una sartén hasta que esté dorada por ambos lados.</li><li>Revuelve los huevos con el tomate y cocínalos bien. Sirve la arepa con los huevos, el aguacate y el yogur aparte.</li></ol></details></div>
+</article>
+<article class="recipe-card">
+<div class="meal-photo meal-photo-2" role="img" aria-label="Pollo con arroz y verduras"></div>
+<div class="recipe-copy"><p class="muted">Almuerzo · 30 min</p><h4>Pollo con arroz y verduras</h4><p>40–50 g de proteína aprox.</p>
+<details><summary>Ingredientes y preparación</summary><p><strong>Para una porción.</strong> 200 g de pechuga cruda, 65 g de arroz seco, 150 g de verduras, 1 cucharadita de aceite, ajo y limón.</p>
+<ol><li>Cocina el arroz según el empaque. Corta el pollo en trozos y sazona con ajo y limón.</li><li>Cocina el pollo en la sartén hasta que el centro llegue a 74 °C. Saltea o cocina al vapor las verduras y sirve con el arroz.</li></ol></details></div>
+</article>
+<article class="recipe-card">
+<div class="meal-photo meal-photo-3" role="img" aria-label="Lentejas con arroz y huevo"></div>
+<div class="recipe-copy"><p class="muted">Almuerzo alternativo · 20 min con lentejas cocidas</p><h4>Lentejas con arroz y huevo</h4><p>Legumbres y huevo como fuentes de proteína.</p>
+<details><summary>Ingredientes y preparación</summary><p><strong>Para una porción.</strong> 220 g de lentejas cocidas, 150 g de arroz cocido, 2 huevos, tomate, cebolla, ajo y 1 cucharadita de aceite.</p>
+<ol><li>Sofríe tomate, cebolla y ajo. Añade las lentejas con un chorrito de agua y cocina hasta que estén calientes.</li><li>Cocina bien los huevos y sírvelos sobre el arroz con las lentejas.</li></ol></details></div>
+</article>
+<article class="recipe-card">
+<div class="meal-photo meal-photo-4" role="img" aria-label="Yogur con manzana y maní"></div>
+<div class="recipe-copy"><p class="muted">Merienda · 5 min</p><h4>Yogur con manzana y maní</h4><p>15–20 g de proteína aprox.</p>
+<details><summary>Ingredientes y preparación</summary><p><strong>Para una porción.</strong> 170 g de yogur griego natural, 1 manzana y 15 g de maní sin sal.</p>
+<ol><li>Corta la manzana y mézclala con el yogur.</li><li>Añade el maní al servir. Si vas a entrenar pronto y prefieres algo liviano, guarda esta merienda para más temprano.</li></ol></details></div>
+</article>
+<article class="recipe-card">
+<div class="meal-photo meal-photo-5" role="img" aria-label="Pescado con papa y verduras"></div>
+<div class="recipe-copy"><p class="muted">Cena después de entrenar · 30 min</p><h4>Pescado con papa y verduras</h4><p>30–40 g de proteína aprox.</p>
+<details><summary>Ingredientes y preparación</summary><p><strong>Para una porción.</strong> 180 g de filete de pescado blanco crudo, 250 g de papa, 150 g de verduras verdes, 1 cucharadita de aceite y limón.</p>
+<ol><li>Corta la papa en cubos y cocínala al horno o en agua hasta que esté tierna.</li><li>Sazona el pescado con limón y cocínalo hasta que el centro llegue a 63 °C. Acompaña con las papas y verduras al vapor.</li></ol></details></div>
+</article>
 </div>
+<h3>Qué picar entre comidas</h3>
+<ul>
+<li><strong>A media mañana, si tienes hambre.</strong> Prueba una fruta con yogur natural o una tostada con queso fresco. Si desayunaste bien y llegas cómodo al almuerzo, la merienda es opcional.</li>
+<li><strong>Entre las 4 y 5 p. m.</strong> Puedes comer el yogur con manzana y maní, o preparar un sándwich pequeño con queso y tomate.</li>
+<li><strong>Entre las 6:15 y 6:40 p. m., si te falta energía.</strong> Come un banano o una tostada y toma agua. Si ya comiste cerca del entrenamiento y te sientes bien, puedes pasar directo a las pesas.</li>
+<li><strong>Después de entrenar.</strong> Cena cuando termines. Si quieres variar el pescado, prepara pollo, huevos o tofu con papa, arroz o arepa y verduras.</li>
+</ul>
+<h3>Lista de compras</h3>
+<p>Las cantidades corresponden al menú base para una persona, incluido el banano opcional antes de entrenar. Para variar, añade arepas, huevos, aguacate, lentejas, tomate y cebolla.</p>
+<label class="shop-days">Días que vas a preparar<select id="shopDays"><option value="1">1 día</option><option value="3" selected>3 días</option><option value="5">5 días</option><option value="7">7 días</option></select></label>
+<ul id="shopItems" class="shopping-list"></ul>
+<h3>Preparación para varios días</h3>
+<ol>
+<li>Deja la avena pesada, lava la fruta y separa las verduras. Usa verduras congeladas si te facilitan cocinar entre semana.</li>
+<li>Porciona el pollo y el pescado. Refrigera o congela los sobrantes en recipientes poco profundos dentro de las dos horas de cocción. Si preparas para varios días, congela lo que no vayas a consumir pronto.</li>
+<li>Cocina el arroz y las verduras que usarás primero. Pica la manzana y añade el maní al servir el yogur.</li>
+</ol>
+<p><a href="https://www.foodsafety.gov/food-safety-charts/safe-minimum-internal-temperatures">Temperaturas seguras de cocción</a> · <a href="https://www.fda.gov/food/buy-store-serve-safe-food/safe-food-handling">Guía de conservación de alimentos</a></p>
 <p><strong>Energizantes y sueño.</strong> Si te acuestas alrededor de las 11 p. m., una pauta conservadora es dejar la cafeína para antes de las 3 p. m., y adelantarla si te afecta el sueño. Revisa los miligramos por envase y suma café, té, energizantes y preentrenos. Evita combinar un energizante con un preentreno estimulante. Para la mayoría de los adultos, la FDA toma 400 mg al día como referencia general, no como meta. En un ensayo, una dosis única de 400 mg alteró el sueño incluso tomada mucho antes de acostarse.</p>
 <p><a href="https://doi.org/10.1186/s12970-017-0189-4">Nutrición alrededor del entrenamiento</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/28698222/">Metaanálisis sobre proteína y masa muscular</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/39377163/">Ensayo de cafeína y sueño</a> · <a href="https://www.fda.gov/consumers/consumer-updates/spilling-beans-how-much-caffeine-too-much">FDA sobre cafeína</a></p>
 </section>
@@ -971,6 +1022,24 @@ const numberFormat = new Intl.NumberFormat('es-CO',{maximumFractionDigits:1,useG
 const dateFormat = new Intl.DateTimeFormat('es-CO',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'});
 const shortDateFormat = new Intl.DateTimeFormat('es-CO',{day:'numeric',month:'short',timeZone:'UTC'});
 const nutritionForm = $('nutritionForm');
+const shoppingIngredients = [["Avena",60,"g"],["Leche",150,"ml"],["Yogur griego natural",370,"g"],["Bananos",2,"unidades"],["Manzanas",1,"unidades"],["Pechuga de pollo cruda",200,"g"],["Arroz seco",65,"g"],["Filete de pescado blanco crudo",180,"g"],["Papa",250,"g"],["Verduras variadas",300,"g"],["Maní sin sal",15,"g"],["Aceite",2,"cucharaditas"],["Ajo, limón y canela",null,"al gusto"]];
+const shoppingDays = $('shopDays');
+function renderShopping() {
+  const days = Number(shoppingDays.value);
+  $('shopItems').replaceChildren(...shoppingIngredients.map(([name,amount,unit]) => {
+    const item = element('li');
+    const label = element('label');
+    const mark = element('input');
+    mark.type = 'checkbox';
+    const quantity = amount == null ? unit : displayNumber(days * amount) + ' ' + unit;
+    label.append(mark,element('span',name + ' · ' + quantity));
+    item.append(label);
+    return item;
+  }));
+}
+shoppingDays.onchange = renderShopping;
+renderShopping();
+
 const measureForm = $('measureForm');
 const metricSelect = $('progressMetric');
 function localDay(date = new Date()) {
