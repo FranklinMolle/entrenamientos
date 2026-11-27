@@ -11,6 +11,7 @@
 .series-log{min-width:0;border:1px solid var(--line);border-radius:.65rem;margin:.8rem 0;padding:.65rem}.series-log legend{padding:0 .3rem;font-weight:700}.set-row{display:grid;grid-template-columns:minmax(3.2rem,.6fr) minmax(0,1fr) minmax(0,1.35fr);align-items:end;gap:.5rem}.set-row strong{align-self:center}.set-row label{font-size:.9rem}.set-row input{padding:.5rem}.plan-cardio{border-left:2px solid var(--line);padding-left:.6rem}
 .data-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:.55rem;align-items:end;margin-bottom:.75rem}.data-form label{margin:0;min-width:0}.data-form input{width:100%;min-width:0}.nutrition-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:.6rem}.nutrition-stats div{border:1px solid var(--line);background:#171717;border-radius:.65rem;padding:.75rem}.nutrition-stats dt{color:#bdbdbd}.nutrition-stats dd{margin:0;font-size:1.22rem;font-weight:700}#progressChart{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:.65rem;margin-bottom:1rem;background:#0c0c0c}#measureHistory button{margin:.2rem}.equipment-note{margin-bottom:.75rem}
 #warmupSteps{padding-left:1.3rem}#warmupSteps li{padding:.45rem 0}.warmup-photos{max-width:29rem}
+.progress-plots{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,24rem),1fr));gap:.8rem}.progress-plots canvas{display:block;width:100%;height:auto;background:#0c0c0c;border:1px solid var(--line);border-radius:.65rem}.progress-plots h4{margin:.3rem 0}.progress-session{margin:.5rem 0;padding:.65rem}.progress-session ul{padding-left:1.1rem}.progress-session button{margin:.35rem 0}.progress-session li{margin-bottom:.5rem}
 </style>
 <main>
 <header><h1>Mi entrenamiento</h1><p>Organiza tus rutinas y lleva el registro de tus sesiones.</p></header>
@@ -104,7 +105,8 @@
 </section>
 <section id="progress" class="card" aria-labelledby="progressHeading" hidden>
 <h2 id="progressHeading" tabindex="-1">Avance</h2>
-<p>Registra tu peso y cintura en condiciones similares. La gráfica de cargas usa el mayor peso anotado en cada sesión para el mismo ejercicio y lugar.</p>
+<h3>Peso corporal y cintura</h3>
+<p>Registra tus medidas en condiciones similares para ver cuánto subes o bajas con el tiempo.</p>
 <form id="measureForm" class="data-form">
 <label>Fecha<input name="day" type="date" required></label>
 <label>Peso (kg)<input name="kg" type="number" min="30" max="300" step="0.1" inputmode="decimal" required></label>
@@ -117,6 +119,15 @@
 <canvas id="progressChart" width="800" height="300" aria-hidden="true" hidden></canvas>
 <details><summary>Ver datos de la gráfica</summary><ul id="progressValues"></ul></details>
 <details><summary>Mediciones guardadas</summary><ul id="measureHistory"></ul></details>
+<h3 id="exerciseTrendHeading" tabindex="-1">Avance por ejercicio</h3>
+<label>Ejercicio y día del plan<select id="exerciseMetric"></select></label>
+<label>Serie para comparar<select id="exerciseSeries"><option value="">Serie más pesada de cada sesión</option></select></label>
+<p id="exerciseSummary" role="status"></p>
+<div class="progress-plots" id="exercisePlots" hidden>
+<div><h4>Carga por sesión</h4><canvas id="exerciseWeightChart" width="680" height="260" aria-hidden="true"></canvas><p id="exerciseWeightEmpty" class="muted" hidden>Sin kilos registrados para esta serie.</p></div>
+<div><h4 id="exerciseCountHeading">Repeticiones por sesión</h4><canvas id="exerciseRepChart" width="680" height="260" aria-hidden="true"></canvas><p id="exerciseRepEmpty" class="muted" hidden>Sin repeticiones o segundos registrados para esta serie.</p></div>
+</div>
+<details id="exerciseRecords" open hidden><summary>Comparación por fecha</summary><ul id="exerciseValues"></ul></details>
 <h3>Sesiones de entrenamiento</h3>
 <p id="progressSessionsEmpty" class="muted">Todavía no hay sesiones del plan guardadas.</p>
 <ul id="progressSessions"></ul>
@@ -1036,25 +1047,87 @@ measureForm.onsubmit = event => {
   if (!validMeasure(record)) return;
   persistPersonal(withMeasurement(state.data,record),'measureStatus','Medida guardada en este navegador.');
 };
-function exerciseTrends() {
+function exerciseKey(session, step) {
+  return [session.place,session.title.split(' · ')[0],step.variant].join('|');
+}
+function exerciseTrends(sessions) {
   const trends = new Map();
-  state.data.history.forEach(session => {
-    if (!Array.isArray(session.steps)) return;
-    const day = localDay(new Date(session.date));
+  sessions.slice().sort((a,b) => Date.parse(a.date)-Date.parse(b.date)).forEach(session => {
     session.steps.forEach(step => {
-      if (!step || !Object.hasOwn(exerciseCatalog,step.variant) || !Array.isArray(step.series)) return;
-      const weights = step.series.map(series => Number(series?.kg)).filter(kg => Number.isFinite(kg) && kg > 0);
-      if (!weights.length) return;
-      const key = session.place + ':' + step.variant;
-      if (!trends.has(key)) trends.set(key,{label:exerciseCatalog[step.variant][1] + ' · ' + session.place,days:new Map()});
-      const days = trends.get(key).days;
-      days.set(day,Math.max(days.get(day) || 0,...weights));
+      if (!step || !Object.hasOwn(exerciseCatalog,step.variant)) return;
+      const key = exerciseKey(session,step);
+      if (!trends.has(key)) {
+        const label = exerciseCatalog[step.variant][1] + ' · ' + session.title.split(' · ')[0] + ' · ' + session.place;
+        trends.set(key,{label,timed:step.variant === 'pl' || step.variant === 'sb1',records:[]});
+      }
+      trends.get(key).records.push({day:localDay(new Date(session.date)),step});
     });
   });
   return trends;
 }
-function drawProgress(points,unit) {
-  const canvas = $('progressChart');
+function seriesNumber(value) {
+  if (value === '' || value == null) return null;
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? number : null;
+}
+function comparisonSeries(step, index) {
+  const series = Array.isArray(step.series) ? step.series : [];
+  const sets = series.map((set,i) => ({position:i+1,kg:seriesNumber(set?.kg),count:seriesNumber(set?.count)}));
+  if (index !== '') return sets[Number(index)] || null;
+  return sets.filter(set => set.kg !== null || set.count !== null)
+    .sort((a,b) => (b.kg ?? -1)-(a.kg ?? -1) || (b.count ?? -1)-(a.count ?? -1))[0] || null;
+}
+function fillSelect(select, options, preferred = select.value) {
+  select.replaceChildren(...options.map(([value,label]) => {
+    const option = element('option',label);
+    option.value = value;
+    return option;
+  }));
+  select.value = options.some(([value]) => value === preferred) ? preferred : options[0][0];
+}
+const exerciseMetric = $('exerciseMetric');
+const exerciseSeries = $('exerciseSeries');
+function renderExerciseProgress() {
+  const trend = progressTrends.get(exerciseMetric.value);
+  $('exercisePlots').hidden = !trend;
+  $('exerciseRecords').hidden = !trend;
+  exerciseSeries.disabled = !trend;
+  if (!trend) { $('exerciseSummary').textContent = 'Guarda una sesión para comparar tus ejercicios.'; return; }
+  const maxSeries = Math.max(0,...trend.records.map(({step}) => Array.isArray(step.series) ? step.series.length : 0));
+  const seriesOptions = [['','Serie más pesada de cada sesión'],...Array.from({length:maxSeries},(_,i) => [String(i),'Serie '+(i+1)])];
+  fillSelect(exerciseSeries,seriesOptions);
+  const records = trend.records.map(({day,step}) => [day,comparisonSeries(step,exerciseSeries.value),step]);
+  const kgPoints = records.flatMap(([day,set]) => set?.kg != null ? [[day,set.kg]] : []);
+  const countPoints = records.flatMap(([day,set]) => set?.count != null ? [[day,set.count]] : []);
+  const countUnit = trend.timed ? 's' : 'reps';
+  $('exerciseSummary').textContent = (kgPoints.length ? 'Carga · ' + progressText(kgPoints,'kg') : 'Sin carga registrada') + ' | '
+    + (countPoints.length ? (trend.timed ? 'Tiempo' : 'Repeticiones') + ' · ' + progressText(countPoints,countUnit) : 'Sin ' + (trend.timed ? 'tiempo' : 'repeticiones') + ' registrados');
+  $('exerciseCountHeading').textContent = (trend.timed ? 'Segundos' : 'Repeticiones') + ' por sesión';
+  $('exerciseWeightEmpty').hidden = kgPoints.length > 0;
+  $('exerciseRepEmpty').hidden = countPoints.length > 0;
+  drawProgress(kgPoints,'kg',$('exerciseWeightChart'));
+  drawProgress(countPoints,countUnit,$('exerciseRepChart'));
+  $('exerciseValues').replaceChildren(...records.map(([day,set,step]) => {
+    const values = set ? [set.kg == null ? '' : displayNumber(set.kg) + ' kg',set.count == null ? '' : displayNumber(set.count) + ' ' + countUnit].filter(Boolean) : [];
+    const result = values.length ? 'Serie ' + set.position + ' · ' + values.join(' × ') : step.log || 'Sin datos para esta serie';
+    return element('li',dateFormat.format(new Date(day)) + ' · ' + result);
+  }));
+}
+function progressText(points,unit) {
+  const latest = points.at(-1);
+  const delta = Math.round((latest[1]-points[0][1])*10)/10;
+  const direction = delta === 0 ? 'sin cambio' : (delta > 0 ? 'subiste ' : 'bajaste ') + displayNumber(Math.abs(delta)) + ' ' + unit;
+  return 'Último: ' + displayNumber(latest[1]) + ' ' + unit + (points.length > 1 ? ' · Desde el primer registro: ' + direction : '');
+}
+let progressTrends = new Map();
+exerciseMetric.onchange = () => { exerciseSeries.value = ''; renderExerciseProgress(); };
+exerciseSeries.onchange = renderExerciseProgress;
+function showExerciseTrend(key) {
+  exerciseMetric.value = key;
+  exerciseMetric.onchange();
+  $('exerciseTrendHeading').focus();
+}
+function drawProgress(points,unit,canvas = $('progressChart')) {
   canvas.hidden = !points.length;
   if (!points.length) return;
   const ctx = canvas.getContext('2d');
@@ -1097,9 +1170,14 @@ function drawProgress(points,unit) {
   points.forEach(([day,value]) => { ctx.beginPath(); ctx.arc(x(day),y(value),4,0,2*Math.PI); ctx.fill(); });
 }
 function renderProgress() {
-  const sessions = state.data.history.filter(session => Array.isArray(session.steps));
+  const sessions = state.data.history.filter(session => Array.isArray(session.steps))
+    .sort((a,b) => Date.parse(b.date)-Date.parse(a.date));
+  progressTrends = exerciseTrends(sessions);
+  fillSelect(exerciseMetric,progressTrends.size ? [...progressTrends].map(([key,trend]) => [key,trend.label]) : [['','Sin ejercicios registrados']]);
+  exerciseMetric.disabled = !progressTrends.size;
+  renderExerciseProgress();
   $('progressSessionsEmpty').hidden = sessions.length > 0;
-  $('progressSessions').replaceChildren(...sessions.map(session => {
+  $('progressSessions').replaceChildren(...sessions.map((session,index) => {
     const planned = exerciseDays.find(([day,title]) => session.title === day + ' · ' + title);
     const done = session.steps.length;
     const recordedTotal = session.plannedExercises;
@@ -1107,29 +1185,29 @@ function renderProgress() {
     const count = total && total >= done ? done + ' de ' + total + ' ejercicios' : done + (done === 1 ? ' ejercicio' : ' ejercicios');
     const date = dateFormat.format(new Date(localDay(new Date(session.date))));
     const row = element('li');
-    row.append(element('strong',session.title),element('p',date + ' · ' + session.place + ' · ' + count));
+    const details = element('details');
+    details.className = 'progress-session';
+    details.open = index === 0;
+    details.append(element('summary',date + ' · ' + session.title + ' · ' + session.place + ' · ' + count));
+    const list = element('ul');
+    session.steps.forEach(step => {
+      if (!step || !Object.hasOwn(exerciseCatalog,step.variant)) return;
+      const item = element('li');
+      const exercise = exerciseCatalog[step.variant][1];
+      item.append(element('strong',Number.isInteger(step.position) ? step.position + '. ' + exercise : exercise),element('p',setSummary(step) || 'Completado sin anotar carga o repeticiones.'),
+        button('Ver gráfica de ' + exercise,() => showExerciseTrend(exerciseKey(session,step))));
+      list.append(item);
+    });
+    details.append(list);
+    row.append(details);
     return row;
   }));
-  const trends = exerciseTrends();
-  const selected = metricSelect.value || 'weight';
-  const options = [['weight','Peso corporal'],['waist','Cintura'],...[...trends].map(([key,trend]) => [key,trend.label])];
-  metricSelect.replaceChildren(...options.map(([key,label]) => {
-    const option = element('option',label);
-    option.value = key;
-    return option;
-  }));
-  metricSelect.value = options.some(([key]) => key === selected) ? selected : 'weight';
   const metric = metricSelect.value;
   const unit = metric === 'waist' ? 'cm' : 'kg';
   const all = measurements();
-  const points = (metric === 'weight' ? all.map(item => [item.day,item.kg])
-    : metric === 'waist' ? all.filter(item => item.waist != null).map(item => [item.day,item.waist])
-    : [...trends.get(metric).days]).sort(([a],[b]) => a.localeCompare(b));
-  const latest = points.at(-1);
-  const delta = latest ? Math.round((latest[1]-points[0][1])*10)/10 : 0;
-  $('progressSummary').textContent = latest ? 'Último: ' + displayNumber(latest[1]) + ' ' + unit
-    + (points.length > 1 ? ' · Cambio desde el primero: ' + (delta > 0 ? '+' : '') + displayNumber(delta) + ' ' + unit : '')
-    : 'Guarda un registro para empezar la gráfica.';
+  const points = metric === 'waist' ? all.filter(item => item.waist != null).map(item => [item.day,item.waist])
+    : all.map(item => [item.day,item.kg]);
+  $('progressSummary').textContent = points.length ? progressText(points,unit) : 'Guarda un registro para empezar la gráfica.';
   $('progressValues').replaceChildren(...points.map(([day,value]) => element('li',dateFormat.format(new Date(day)) + ' · ' + displayNumber(value) + ' ' + unit)));
   $('measureHistory').replaceChildren(...all.slice().reverse().map(record => {
     const row = element('li',dateFormat.format(new Date(record.day)) + ' · ' + displayNumber(record.kg) + ' kg'
@@ -1353,7 +1431,7 @@ $('finishPlan').onclick = () => {
   const draft = planDraft();
   const completed = steps.flatMap((_, index) => {
     const step = draft[index];
-    return step && (step.done || setSummary(step)) ? [{variant:step.variant,series:step.series,log:step.log}] : [];
+    return step && (step.done || setSummary(step)) ? [{variant:step.variant,series:step.series,log:step.log,position:index+1}] : [];
   });
   if (!completed.length) return;
   const session = {id:crypto.randomUUID(),title:day + ' · ' + title,place,date:new Date().toISOString(),steps:completed,plannedExercises:steps.length};
