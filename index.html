@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mi entrenamiento</title>
+<style>
+:root{color-scheme:dark;--accent:#ddf987;--panel:#202922;--line:#455448}*{box-sizing:border-box}body{margin:0;background:#141a16;color:#f4faf5;font:1rem/1.5 system-ui,sans-serif}main{width:min(66rem,calc(100% - 2rem));margin:auto;padding:2.5rem 0}header{border-bottom:1px solid var(--line);margin-bottom:1.25rem;padding-bottom:1.25rem}h1{font-size:clamp(2.8rem,8vw,5.75rem);letter-spacing:-.07em;line-height:1;margin:0 0 1rem}h2,h3,p{margin:0 0 .65rem}header p,.muted{color:#b9c8bc}.grid{display:grid;grid-template-columns:2fr 1fr;gap:1rem}.card,details{background:var(--panel);border:1px solid var(--line);border-radius:1rem;padding:1rem;margin-bottom:1rem}.row,nav{display:flex;flex-wrap:wrap;gap:.5rem}nav{margin-bottom:1rem}button,input,textarea,select{font:inherit;color:inherit;border:1px solid var(--line);border-radius:.55rem;background:#172019;padding:.55rem .8rem}button{min-height:44px;cursor:pointer}button[aria-pressed=true],.primary{background:var(--accent);color:#222b13;font-weight:700}button:disabled{opacity:.6}label{display:grid;gap:.25rem;margin-bottom:.7rem}textarea{min-height:6rem;resize:vertical}summary{cursor:pointer;font-weight:700}details[open] summary{margin-bottom:.75rem}article{border-top:1px solid var(--line);padding:.9rem 0}article:last-child{padding-bottom:0}li{margin:.35rem 0}output{display:block;font-size:3rem;font-variant-numeric:tabular-nums}a,[role=status]{color:var(--accent)}:focus-visible{outline:2px solid var(--accent);outline-offset:3px}[hidden]{display:none!important}@media(max-width:700px){.grid{grid-template-columns:1fr}main{padding-top:1.25rem}}
+</style>
+<main>
+<header><h1>Mi entrenamiento</h1><p>Organiza tus rutinas y lleva el registro de tus sesiones.</p></header>
+<nav aria-label="Lugar"><button data-place="Casa">Casa</button><button data-place="Gimnasio">Gimnasio</button></nav>
+<div class="grid"><div>
+<section class="card"><h2>Rutinas</h2><div id="routines"></div></section>
+<details id="editor"><summary>Crear o editar rutina</summary>
+<form id="routineForm">
+<label>Nombre<input name="title" required maxlength="100"></label>
+<label>Lugar<select name="place"><option>Casa</option><option>Gimnasio</option></select></label>
+<label>Ejercicios, uno por línea<textarea name="exercises" required maxlength="4000" placeholder="Sentadilla · 3 series de 10"></textarea></label>
+<div class="row"><button class="primary">Guardar</button><button type="button" id="cancel">Cancelar</button></div>
+</form></details>
+<section class="card"><h2>Historial</h2><p id="count" class="muted"></p><ul id="history"></ul></section>
+<p id="notice" role="status"></p></div>
+<aside><section class="card"><h2>Descanso</h2><output id="timer" aria-live="off">01:00</output>
+<div class="row"><button data-time="30">30 s</button><button data-time="60">60 s</button><button data-time="90">90 s</button></div>
+<p></p><div class="row"><button id="start" class="primary">Iniciar</button><button id="reset">Reiniciar</button></div></section>
+<details><summary>Sincronización privada</summary>
+<p class="muted">Usa un token de acceso detallado de GitHub con permiso de lectura y escritura en Contents para el repositorio entrenamientos-datos. El token se conserva solo mientras esta página está abierta.</p>
+<p><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Crear token en GitHub</a></p>
+<form id="connect"><label>Token de GitHub<input id="secret" type="password" required autocomplete="off" spellcheck="false"></label><button class="primary">Conectar</button></form>
+<div id="sync" class="row" hidden><button id="up">Subir datos</button><button id="down">Cargar datos</button><button id="disconnect">Desconectar</button></div>
+<p id="syncStatus" role="status"></p></details>
+</aside></div></main>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const key = 'entrenamientos:v1';
+const repo = 'https://api.github.com/repos/FranklinMolle/entrenamientos-datos';
+const file = repo + '/contents/entrenamientos.json';
+const initial = {routines:[
+  {id:'casa',place:'Casa',title:'Cuerpo completo en casa',exercises:['Sentadilla al aire','Flexión con apoyo','Puente de glúteos']},
+  {id:'gimnasio',place:'Gimnasio',title:'Cuerpo completo en gimnasio',exercises:['Prensa de piernas','Remo en polea','Press de pecho en máquina']}
+],history:[]};
+function load() {
+  try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
+}
+function label(value) { return typeof value === 'string' && value.trim().length > 0; }
+function entry(item) { return item && label(item.id) && label(item.title) && ['Casa','Gimnasio'].includes(item.place); }
+function valid(value) {
+  return value && Array.isArray(value.routines) && Array.isArray(value.history)
+    && value.routines.every(r => entry(r) && Array.isArray(r.exercises) && r.exercises.length && r.exercises.every(label))
+    && value.history.every(s => entry(s) && Number.isFinite(Date.parse(s.date)));
+}
+let state = load();
+if (!valid(state?.data)) state = {data:initial,sha:null,dirty:false};
+let place = 'Casa';
+let editing = null;
+let token = '';
+let connected = false;
+const form = $('routineForm');
+function say(message) { $('notice').textContent = message; }
+function save(data, sha = state.sha, dirty = true) {
+  const next = {data,sha,dirty};
+  try { localStorage.setItem(key, JSON.stringify(next)); }
+  catch { throw Error('El navegador no pudo guardar tus cambios.'); }
+  state = next;
+  render();
+}
+function change(data,message) {
+  try { save(data); say(message); return true; }
+  catch (error) { say(error.message); return false; }
+}
+function element(tag,text) {
+  const el = document.createElement(tag);
+  if (text !== undefined) el.textContent = text;
+  return el;
+}
+function button(text, action, primary = false) {
+  const el = element('button',text);
+  el.type = 'button';
+  if (primary) el.className = 'primary';
+  el.onclick = action;
+  return el;
+}
+function closeEditor() {
+  editing = null;
+  form.reset();
+  form.elements.place.value = place;
+  $('editor').open = false;
+}
+function render() {
+  document.querySelectorAll('[data-place]').forEach(tab => tab.setAttribute('aria-pressed',tab.dataset.place === place));
+  const data = state.data;
+  const routines = data.routines.filter(r => r.place === place).map(routine => {
+    const card = element('article');
+    const list = element('ul');
+    list.append(...routine.exercises.map(exercise => element('li',exercise)));
+    const actions = element('div');
+    actions.className = 'row';
+    actions.append(button('Registrar sesión', () => {
+      const session = {id:crypto.randomUUID(),title:routine.title,place:routine.place,date:new Date().toISOString()};
+      change({...state.data,history:[session,...state.data.history]},'Sesión registrada.');
+    },true),button('Editar', () => {
+      editing = routine.id;
+      form.elements.title.value = routine.title;
+      form.elements.place.value = routine.place;
+      form.elements.exercises.value = routine.exercises.join('\n');
+      $('editor').open = true;
+      form.elements.title.focus();
+    }),button('Eliminar', () => {
+      if (confirm('¿Eliminar la rutina?') && change({...state.data,routines:state.data.routines.filter(r => r.id !== routine.id)},'Rutina eliminada.') && editing === routine.id) closeEditor();
+    }));
+    card.append(element('h3',routine.title),list,actions);
+    return card;
+  });
+  $('routines').replaceChildren(...(routines.length ? routines : [element('p','Crea una rutina para este lugar.')]));
+  $('count').textContent = data.history.length ? 'Sesiones registradas: ' + data.history.length : 'Todavía no hay sesiones registradas.';
+  $('history').replaceChildren(...data.history.map(session => {
+    const date = new Date(session.date).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'});
+    const item = element('li',session.title + ' · ' + session.place + ' · ' + date + ' ');
+    item.append(button('Quitar', () => {
+      if (confirm('¿Quitar la sesión?')) change({...state.data,history:state.data.history.filter(s => s.id !== session.id)},'Sesión eliminada.');
+    }));
+    return item;
+  }));
+}
+document.querySelectorAll('[data-place]').forEach(tab => tab.onclick = () => {
+  place = tab.dataset.place;
+  if (!editing) form.elements.place.value = place;
+  render();
+});
+$('cancel').onclick = closeEditor;
+form.onsubmit = event => {
+  event.preventDefault();
+  const title = form.elements.title.value.trim();
+  const exercises = form.elements.exercises.value.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+  if (!title || !exercises.length) { say('Escribe un nombre y al menos un ejercicio.'); return; }
+  const routine = {id:editing || crypto.randomUUID(),title,place:form.elements.place.value,exercises};
+  const current = state.data.routines;
+  const routines = editing ? current.map(r => r.id === editing ? routine : r) : [...current,routine];
+  if (change({...state.data,routines},'Rutina guardada en este navegador.')) {
+    place = routine.place;
+    closeEditor();
+    render();
+  }
+};
+let duration = 60000;
+let remaining = duration;
+let end = 0;
+function tick() {
+  if (end) {
+    remaining = Math.max(0,end - Date.now());
+    if (!remaining) { end = 0; say('Terminó el descanso.'); }
+  }
+  const seconds = Math.ceil(remaining / 1000);
+  $('timer').textContent = [Math.floor(seconds/60),seconds%60].map(n => String(n).padStart(2,'0')).join(':');
+  $('start').textContent = end ? 'Pausar' : 'Iniciar';
+}
+$('start').onclick = () => {
+  if (end) { tick(); end = 0; }
+  else end = Date.now() + (remaining || duration);
+  tick();
+};
+function reset() { end = 0; remaining = duration; tick(); }
+$('reset').onclick = reset;
+document.querySelectorAll('[data-time]').forEach(b => b.onclick = () => { duration = Number(b.dataset.time) * 1000; reset(); });
+setInterval(tick,200);
+async function api(url, payload) {
+  const response = await fetch(url,{
+    method:payload ? 'PUT' : 'GET',cache:'no-store',
+    headers:{Authorization:'Bearer ' + token,Accept:'application/vnd.github+json','Content-Type':'application/json'},
+    body:payload ? JSON.stringify(payload) : undefined
+  });
+  if (response.status === 404 && url === file && !payload) return null;
+  if ([409,422].includes(response.status)) throw Error('GitHub no aceptó el cambio. Carga la versión actual y vuelve a intentarlo.');
+  if (!response.ok) throw Error('GitHub respondió ' + response.status + '. Revisa el acceso del token al repositorio privado.');
+  return response.json();
+}
+async function remote() {
+  const result = await api(file);
+  if (!result) return null;
+  const decoded = new TextDecoder().decode(Uint8Array.from(atob(result.content), c => c.charCodeAt(0)));
+  const data = JSON.parse(decoded);
+  if (!valid(data)) throw Error('El archivo guardado tiene un formato inválido.');
+  return {data,sha:result.sha};
+}
+function syncStatus(message) { $('syncStatus').textContent = message; }
+function displaySync() {
+  $('connect').hidden = connected;
+  $('sync').hidden = !connected;
+}
+async function sync(task) {
+  const buttons = document.querySelectorAll('#connect button,#sync button');
+  buttons.forEach(b => b.disabled = true);
+  syncStatus('Consultando GitHub…');
+  try { await task(); } catch (error) { syncStatus(error.message); }
+  finally { displaySync(); buttons.forEach(b => b.disabled = false); }
+}
+$('connect').onsubmit = event => {
+  event.preventDefault();
+  sync(async () => {
+    token = $('secret').value.trim();
+    $('secret').value = '';
+    try {
+      if (!(await api(repo)).private) throw Error('El repositorio de datos debe ser privado.');
+      connected = true;
+      syncStatus('Conectado. Puedes subir o cargar tus datos.');
+    } catch (error) { token = ''; throw error; }
+  });
+};
+$('disconnect').onclick = () => { token = ''; connected = false; displaySync(); syncStatus('Desconectado.'); };
+$('down').onclick = () => sync(async () => {
+  const current = await remote();
+  if (!current) { syncStatus('Aún no hay datos en GitHub.'); return; }
+  if (state.dirty && JSON.stringify(state.data) !== JSON.stringify(current.data)
+    && !confirm('¿Reemplazar tus cambios locales con la versión de GitHub?')) { syncStatus('Carga cancelada.'); return; }
+  save(current.data,current.sha,false);
+  closeEditor();
+  syncStatus('Datos cargados desde GitHub.');
+});
+$('up').onclick = () => sync(async () => {
+  const current = await remote();
+  const snapshot = state.data;
+  if (current && JSON.stringify(current.data) === JSON.stringify(snapshot)) {
+    save(snapshot,current.sha,false);
+    syncStatus('Los datos ya están sincronizados.');
+    return;
+  }
+  if ((current?.sha ?? null) !== state.sha) throw Error('La versión de GitHub cambió. Cárgala antes de volver a subir.');
+  const bytes = new TextEncoder().encode(JSON.stringify(snapshot));
+  const content = btoa(Array.from(bytes, byte => String.fromCharCode(byte)).join(''));
+  const payload = {message:'Actualizar entrenamientos',content};
+  if (current) payload.sha = current.sha;
+  const result = await api(file,payload);
+  const changedDuringUpload = state.data !== snapshot;
+  save(state.data,result.content.sha,changedDuringUpload);
+  syncStatus(changedDuringUpload ? 'Se subió la versión anterior. Aún tienes cambios locales.' : 'Datos subidos al repositorio privado.');
+});
+render();
+</script>
+</html>
