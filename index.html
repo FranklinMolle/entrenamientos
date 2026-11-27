@@ -8,37 +8,35 @@
 .plan-day{max-width:19rem}.plan-step{padding:1rem 0;border-top:1px solid var(--line)}.plan-step::marker{color:var(--accent);font-weight:700}.plan-step h3{margin-bottom:.3rem}.plan-step input:not([type=checkbox]),.plan-step select{width:100%;min-width:0}.plan-check{display:flex;align-items:center;gap:.6rem}.plan-check input{width:1.2rem;height:1.2rem;accent-color:var(--accent)}.plan-step details{margin:.7rem 0;padding:.65rem}.photo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}.photo-grid figure{margin:0}.photo-grid img{display:block;width:100%;height:auto;aspect-ratio:1.5;object-fit:contain;background:#fff;border-radius:.45rem}.photo-grid figcaption{color:#bdbdbd}.plan .row{align-items:center}#planSteps{padding-left:1.45rem}.plan p{overflow-wrap:anywhere}
 #activeRest{position:sticky;bottom:.55rem;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:.5rem;width:min(100%,26rem);margin:.5rem auto 0;background:#181818;box-shadow:0 4px 18px #0008;border:1px solid var(--line);border-radius:.65rem;padding:.5rem .65rem}#activeRest span{font-variant-numeric:tabular-nums;font-weight:700}.history-log{margin:.6rem 0}
 .exercise-rest{display:inline-block;margin:0 0 .65rem;border:1px solid var(--line);border-radius:.45rem;padding:.22rem .55rem;color:var(--accent);font-weight:700}.posture-tag{font-size:.9rem;color:var(--accent)}.meal-guide p{padding:.6rem 0;border-bottom:1px solid var(--line)}#nutritionWeight{max-width:10rem;margin-bottom:.6rem}
+.series-log{min-width:0;border:1px solid var(--line);border-radius:.65rem;margin:.8rem 0;padding:.65rem}.series-log legend{padding:0 .3rem;font-weight:700}.set-row{display:grid;grid-template-columns:minmax(3.2rem,.6fr) minmax(0,1fr) minmax(0,1.35fr);align-items:end;gap:.5rem}.set-row strong{align-self:center}.set-row label{font-size:.9rem}.set-row input{padding:.5rem}.plan-cardio{border-left:2px solid var(--line);padding-left:.6rem}
 </style>
 <main>
 <header><h1>Mi entrenamiento</h1><p>Organiza tus rutinas y lleva el registro de tus sesiones.</p></header>
-<nav aria-label="Lugar"><button data-place="Casa">Casa</button><button data-place="Gimnasio">Gimnasio</button></nav>
-<div class="grid"><div>
+<nav aria-label="Secciones"><button data-place="Casa" aria-controls="trainingPanel">Casa</button><button data-place="Gimnasio" aria-controls="trainingPanel">Gimnasio</button><button id="nutritionTab" aria-controls="nutrition" aria-pressed="false">Alimentación</button></nav>
+<div class="grid" id="trainingPanel"><div>
 <section class="card plan" aria-labelledby="planHeading">
 <h2 id="planHeading">Tu plan semanal</h2>
 <p class="muted">Cinco días de pesas con prioridad de espalda y brazos. El sábado es opcional. Elige Casa o Gimnasio arriba. En casa las opciones requieren una combinación de mancuernas, banda, barra de dominadas o pelota según el día.</p>
 <label class="plan-day">Día de entrenamiento<select id="planDay"></select></label>
 <h3 id="planTitle"></h3>
 <p id="planReason" class="muted"></p>
+<p id="dayCardio" class="plan-cardio" hidden></p>
 <ol id="planSteps"></ol>
 <div class="row"><button class="primary" id="finishPlan" disabled>Guardar sesión</button><span id="planStatus" role="status"></span></div>
 </section>
+<details id="cardio"><summary>Cardio semanal</summary>
+<p><strong>Lunes después de pesas.</strong> Haz 15–20 min de caminata con inclinación moderada. En casa, una caminata rápida al aire libre cumple el mismo propósito.</p>
+<p><strong>Sábado opcional.</strong> Haz 20–30 min a ritmo conversacional. Puedes caminar con inclinación, usar la escaladora a ritmo moderado o alternar trote suave y caminata. Si las piernas siguen cansadas del viernes, elige caminata suave o descansa.</p>
+<p><strong>Miércoles y viernes.</strong> Prioriza la sesión de piernas. Si quieres moverte después, una caminata suave es suficiente.</p>
+<p><strong>¿Cuál ayuda más a perder grasa?</strong> No hay una modalidad que gane siempre. Importan el balance energético y el cardio que puedas repetir con constancia. Para tu objetivo de ganar músculo, empieza con caminata inclinada porque puedes graduar fácilmente el esfuerzo. Si la escaladora o el trote te cansan las piernas y baja tu rendimiento en pesas, reduce su intensidad o duración.</p>
+<p><a href="https://pubmed.ncbi.nlm.nih.gov/39277776/">ACSM sobre actividad física y pérdida de grasa</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/34757594/">Revisión sobre combinar cardio y pesas</a></p>
+</details>
 <details id="posture"><summary>Postura y prominencia del cuello</summary>
 <p>En el plan marqué <strong>Control escapular</strong> en remos, aperturas inversas y face pulls. Entrenan la musculatura que mueve y estabiliza los omóplatos. Hazlos con el cuello en una posición cómoda, sin empujar la cabeza hacia delante ni encoger los hombros.</p>
 <p>En personas con cabeza adelantada se ha estudiado la combinación de estabilización escapular y extensión torácica. La prominencia del cuello puede deberse a la forma de la columna, una acumulación de grasa u otras causas. El ejercicio puede ayudar con algunos problemas posturales y su efecto sobre el bulto depende de la causa. Si la prominencia es nueva, crece o no sabes de dónde viene, conviene una valoración médica. Busca atención pronta si aparece debilidad, entumecimiento o dolor persistente.</p>
 <p><a href="https://pubmed.ncbi.nlm.nih.gov/34870115/">Ensayo sobre postura y control escapular</a> · <a href="https://medlineplus.gov/ency/article/003112.htm">MedlinePlus sobre el bulto detrás del cuello</a></p>
 </details>
-<details id="nutrition"><summary>Alimentación para entrenar a las 7 p. m.</summary>
-<div class="meal-guide">
-<p><strong>5:00–6:00 p. m. · Comida previa</strong><br>Arroz, papa o arepa con pollo, huevos, atún o yogur. Elige una porción que toleres bien y toma agua.</p>
-<p><strong>6:15–6:40 p. m. · Merienda opcional</strong><br>Si llegas con hambre o han pasado varias horas desde que comiste, prueba banano, yogur o tostada. Para este horario, mi recomendación es <strong>0 mg de cafeína como preentreno</strong>. Lleva agua y bebe según la sed durante la sesión.</p>
-<p><strong>8:15–9:00 p. m. · Cena, según cuándo termines</strong><br>Combina una fuente de proteína con carbohidratos y verduras. Por ejemplo, pescado con papa y ensalada, pollo con arroz y verduras o lentejas con arroz y huevo. Puedes apuntar a 20–40 g de proteína en la comida. La proteína total del día importa más que cenar a una hora exacta.</p>
-</div>
-<label for="nutritionWeight">Peso actual en kg (opcional)</label>
-<input id="nutritionWeight" type="number" min="30" max="300" step="0.1" inputmode="decimal">
-<p id="proteinTarget" role="status">Referencia para hipertrofia: aproximadamente 1,6–2,0 g de proteína/kg al día.</p>
-<p><strong>Energizantes y sueño.</strong> Si te acuestas alrededor de las 11 p. m., una pauta conservadora es dejar la cafeína para antes de las 3 p. m., y adelantarla si te afecta el sueño. Revisa los miligramos por envase y suma café, té, energizantes y preentrenos. Evita combinar un energizante con un preentreno estimulante. Para la mayoría de los adultos, la FDA toma 400 mg al día como referencia general, no como meta. En un ensayo, una dosis única de 400 mg alteró el sueño incluso tomada mucho antes de acostarse.</p>
-<p><a href="https://doi.org/10.1186/s12970-017-0189-4">Nutrición alrededor del entrenamiento</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/28698222/">Metaanálisis sobre proteína y masa muscular</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/39377163/">Ensayo de cafeína y sueño</a> · <a href="https://www.fda.gov/consumers/consumer-updates/spilling-beans-how-much-caffeine-too-much">FDA sobre cafeína</a></p>
-</details>
+
 <details><summary>Cómo progresar y por qué cambié la rutina</summary>
 <p><strong>Orden.</strong> Empieza con el ejercicio que más te interesa fortalecer. Para hipertrofia, los estudios encuentran resultados similares con distintos órdenes. Si un equipo está ocupado, elige una alternativa en el mismo puesto y continúa. <a href="https://pubmed.ncbi.nlm.nih.gov/32077380/">Nunes y cols., revisión con metaanálisis</a>.</p>
 <p><strong>Calentamiento.</strong> Haz unos minutos suaves si los necesitas. Antes del primer ejercicio pesado, realiza 2–3 series de aproximación con carga creciente y sin fatiga. Las series del plan son las de trabajo.</p>
@@ -68,6 +66,26 @@
 <div id="sync" class="row" hidden><button id="up">Subir datos</button><button id="down">Cargar datos</button><button id="disconnect">Desconectar</button></div>
 <p id="syncStatus" role="status"></p></details>
 </aside></div>
+<section id="nutrition" class="card" aria-labelledby="nutritionHeading" hidden>
+<h2 id="nutritionHeading" tabindex="-1">Alimentación para ganar músculo</h2>
+<p class="muted">Guía de volumen para tu entrenamiento de las 7 p. m.</p>
+<h3>Empieza con un superávit pequeño</h3>
+<p>Si tu peso lleva unas dos semanas estable y quieres priorizar ganar músculo, prueba añadir alrededor del <strong>5 % sobre tu ingesta de mantenimiento</strong>. Por ejemplo, si mantienes tu peso con 2.300 kcal, serían unas 115 kcal extra al día. Si no cuentas calorías, empieza con una porción pequeña adicional, como una arepa pequeña o un vaso de leche. Si tu peso ya sube lentamente y tus cargas mejoran, puedes mantener las porciones.</p>
+<p>Compara el promedio semanal de peso, la cintura y tu rendimiento durante dos o tres semanas. Si el peso sigue estable y quieres subir, añade un poco de comida. Si la cintura sube rápido, reduce el extra. En un ensayo pequeño con personas entrenadas, ganar peso más rápido tendió a aumentar sobre todo el grosor de los pliegues cutáneos. <a href="https://pubmed.ncbi.nlm.nih.gov/37914977/">Ensayo sobre superávit y entrenamiento</a></p>
+<h3>Qué comer durante el día</h3>
+<p>Reparte la proteína entre tres o cuatro comidas. Prueba huevos y yogur con avena en el desayuno, pollo o lentejas con arroz y verduras al almuerzo, y una cena con pescado, huevos o tofu. Incluye frutas, verduras y fuentes de grasa como aguacate, nueces o aceite de oliva.</p>
+<h3>Antes y después de las pesas</h3>
+<div class="meal-guide">
+<p><strong>5:00–6:00 p. m. · Comida previa</strong><br>Arroz, papa o arepa con pollo, huevos, atún o yogur. Elige una porción que toleres bien y toma agua.</p>
+<p><strong>6:15–6:40 p. m. · Merienda opcional</strong><br>Si llegas con hambre o han pasado varias horas desde que comiste, prueba banano, yogur o tostada. Para este horario, mi recomendación es <strong>0 mg de cafeína como preentreno</strong>. Lleva agua y bebe según la sed durante la sesión.</p>
+<p><strong>8:15–9:00 p. m. · Cena, según cuándo termines</strong><br>Combina una fuente de proteína con carbohidratos y verduras. Por ejemplo, pescado con papa y ensalada, pollo con arroz y verduras o lentejas con arroz y huevo. Puedes apuntar a 20–40 g de proteína en la comida. La proteína total del día importa más que cenar a una hora exacta.</p>
+</div>
+<label for="nutritionWeight">Peso actual en kg (opcional)</label>
+<input id="nutritionWeight" type="number" min="30" max="300" step="0.1" inputmode="decimal">
+<p id="proteinTarget" role="status">Referencia para hipertrofia: aproximadamente 1,6–2,0 g de proteína/kg al día.</p>
+<p><strong>Energizantes y sueño.</strong> Si te acuestas alrededor de las 11 p. m., una pauta conservadora es dejar la cafeína para antes de las 3 p. m., y adelantarla si te afecta el sueño. Revisa los miligramos por envase y suma café, té, energizantes y preentrenos. Evita combinar un energizante con un preentreno estimulante. Para la mayoría de los adultos, la FDA toma 400 mg al día como referencia general, no como meta. En un ensayo, una dosis única de 400 mg alteró el sueño incluso tomada mucho antes de acostarse.</p>
+<p><a href="https://doi.org/10.1186/s12970-017-0189-4">Nutrición alrededor del entrenamiento</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/28698222/">Metaanálisis sobre proteína y masa muscular</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/39377163/">Ensayo de cafeína y sueño</a> · <a href="https://www.fda.gov/consumers/consumer-updates/spilling-beans-how-much-caffeine-too-much">FDA sobre cafeína</a></p>
+</section>
 <div id="activeRest" hidden><span id="restReadout"></span><button id="restToggle">Pausar</button><button id="restHide">Cerrar</button></div>
 </main>
 <script>
@@ -167,7 +185,7 @@ function render() {
       const list = element('ul');
       session.steps.forEach(step => {
         if (!step || !Object.hasOwn(exerciseCatalog,step.variant)) return;
-        list.append(element('li',exerciseCatalog[step.variant][1] + (step.log ? ' · ' + step.log : '')));
+        list.append(element('li',[exerciseCatalog[step.variant][1],setSummary(step)].filter(Boolean).join(' · ')));
       });
       details.append(list);
       item.append(details);
@@ -796,6 +814,63 @@ nutritionWeight.oninput = () => {
     ? 'Referencia diaria: ' + Math.round(kg * 1.6) + '–' + Math.round(kg * 2) + ' g de proteína.'
     : 'Referencia para hipertrofia: aproximadamente 1,6–2,0 g de proteína/kg al día.';
 };
+function setSummary(step) {
+  const logged = Array.isArray(step.series) ? step.series.flatMap((set,index) => {
+    if (!set || (set.kg === '' && set.count === '')) return [];
+    const values = [];
+    if (set.kg !== '' && Number.isFinite(Number(set.kg))) values.push(Number(set.kg).toLocaleString('es-CO') + ' kg');
+    if (set.count !== '' && Number.isFinite(Number(set.count))) values.push(set.count + (step.variant === 'pl' || step.variant === 'sb1' ? ' s' : ' reps'));
+    return values.length ? ['S' + (index + 1) + ' ' + values.join(' × ')] : [];
+  }) : [];
+  return [...logged,step.log].filter(Boolean).join(' · ');
+}
+function renderSeries(fieldset, saved, sets, timed, perSide) {
+  const legend = element('legend','Carga por serie');
+  const hint = element('p','Escribe el peso en kg. Para peso corporal, puedes dejarlo vacío.');
+  hint.className = 'muted';
+  const metric = timed ? 'Segundos' : 'Repeticiones';
+  const rows = Array.from({length:sets},(_,index) => {
+    const entry = saved.series[index] ||= {kg:'',count:''};
+    const row = element('div');
+    row.className = 'set-row';
+    row.append(element('strong','Serie ' + (index + 1)));
+    [['kg','Peso (kg)','decimal'],['count',metric + (perSide ? ' por lado' : ''),'numeric']].forEach(([key,label,mode]) => {
+      const field = element('input');
+      field.type = 'number';
+      field.min = '0';
+      field.step = key === 'kg' ? 'any' : '1';
+      field.inputMode = mode;
+      field.value = entry[key];
+      field.setAttribute('aria-label',label + ', serie ' + (index + 1));
+      field.oninput = () => {
+        entry[key] = field.validity.valid ? field.value : '';
+        persistDraft();
+        updatePlanStatus(exerciseDays[planDay][3].length);
+      };
+      const wrapper = element('label',label);
+      wrapper.append(field);
+      row.append(wrapper);
+    });
+    return row;
+  });
+  fieldset.replaceChildren(legend,hint,...rows);
+  if (saved.log) fieldset.append(element('p','Nota anterior: ' + saved.log));
+}
+$('nutritionTab').onclick = () => {
+  $('trainingPanel').hidden = true;
+  $('nutrition').hidden = false;
+  $('nutritionTab').setAttribute('aria-pressed','true');
+  document.querySelectorAll('[data-place]').forEach(tab => tab.setAttribute('aria-pressed','false'));
+  $('nutritionHeading').focus();
+};
+const cardioByDay = [
+  'Cardio después de pesas · 15–20 min de caminata inclinada o caminata rápida.',
+  '',
+  'Día de piernas · prioriza pesas. Si quieres, termina con una caminata suave.',
+  '',
+  'Día de piernas · prioriza pesas. Si quieres, termina con una caminata suave.',
+  'Cardio opcional · 20–30 min a ritmo conversacional. Elige caminata, escaladora o trote suave con pausas de caminata.'
+];
 const draftKey = key + ':plan';
 let planDay = 0;
 let drafts = {};
@@ -819,10 +894,13 @@ function renderPlan() {
   const [day,title,reason,steps] = exerciseDays[planDay];
   $('planTitle').textContent = day + ' · ' + title;
   $('planReason').textContent = reason;
+  $('dayCardio').textContent = cardioByDay[planDay];
+  $('dayCardio').hidden = !cardioByDay[planDay];
   const draft = planDraft();
   const rows = steps.map(([gym,home,sets,reps,rest], index) => {
     const variants = place === 'Casa' ? home : gym;
-    const saved = draft[index] ||= {variant:variants[0],done:false,log:''};
+    const saved = draft[index] ||= {variant:variants[0],done:false,series:[]};
+    if (!Array.isArray(saved.series)) saved.series = [];
     const item = element('li');
     item.className = 'plan-step';
     const head = element('h3');
@@ -854,13 +932,8 @@ function renderPlan() {
     const gallery = element('div');
     gallery.className = 'photo-grid';
     reference.append(cues,gallery);
-    const log = document.createElement('input');
-    log.maxLength = 120;
-    log.placeholder = 'Ejemplo: 16 kg · 12, 11, 10';
-    log.value = saved.log;
-    log.oninput = () => { saved.log = log.value; persistDraft(); };
-    const logLabel = element('label','Carga y repeticiones (opcional)');
-    logLabel.append(log);
+    const seriesFields = element('fieldset');
+    seriesFields.className = 'series-log';
     const previous = element('p');
     previous.className = 'muted';
     function showVariant() {
@@ -868,13 +941,15 @@ function renderPlan() {
       head.textContent = name;
       const id = swap.value;
       const dosage = id === 'pl' ? '25–40 s' : id === 'sb1' ? '20–35 s por lado'
-        : reps + (unilateralExercises.has(id) && !reps.includes('por lado') ? ' por lado' : '');
+        : reps.replace(' por lado','') + (unilateralExercises.has(id) ? ' por lado' : '');
       meta.textContent = sets + ' series × ' + dosage;
       postureLabel.hidden = !postureExercises.has(id);
       cues.textContent = muscle + ' · ' + technique;
-      const last = state.data.history.find(session => Array.isArray(session.steps) && session.steps.some(step => step && step.variant === swap.value && step.log));
-      previous.textContent = last ? 'Último registro: ' + last.steps.find(step => step && step.variant === swap.value && step.log).log : '';
-      previous.hidden = !last;
+      const recent = state.data.history.flatMap(session => Array.isArray(session.steps) ? session.steps : [])
+        .find(step => step && step.variant === id && setSummary(step));
+      previous.textContent = recent ? 'Último registro: ' + setSummary(recent) : '';
+      previous.hidden = !recent;
+      renderSeries(seriesFields,saved,sets,id === 'pl' || id === 'sb1',unilateralExercises.has(id));
       gallery.replaceChildren();
       if (!reference.open) return;
       ['Inicio','Final'].forEach((position, frame) => {
@@ -893,18 +968,18 @@ function renderPlan() {
     }
     reference.ontoggle = () => { if (reference.open && !gallery.childElementCount) showVariant(); };
     swap.onchange = () => {
-      if ((saved.done || saved.log) && !confirm('¿Cambiar la variante y reiniciar el registro de este ejercicio?')) { swap.value = saved.variant; return; }
+      if ((saved.done || setSummary(saved)) && !confirm('¿Cambiar la variante y reiniciar el registro de este ejercicio?')) { swap.value = saved.variant; return; }
       saved.variant = swap.value;
       saved.done = false;
-      saved.log = '';
+      delete saved.log;
+      saved.series = [];
       done.checked = false;
-      log.value = '';
       persistDraft();
       updatePlanStatus(steps.length);
       showVariant();
     };
     const restButton = button('Iniciar descanso de ' + formatRest(rest),() => startRest(rest));
-    item.append(head,meta,restLabel,postureLabel,swapLabel,reference,previous,logLabel,doneLabel,restButton);
+    item.append(head,meta,restLabel,postureLabel,swapLabel,reference,previous,seriesFields,doneLabel,restButton);
     showVariant();
     return item;
   });
@@ -913,8 +988,8 @@ function renderPlan() {
 }
 function updatePlanStatus(total) {
   const draft = planDraft();
-  const count = Array.from({length:total},(_,index) => draft[index]?.done).filter(Boolean).length;
-  $('planStatus').textContent = count + ' de ' + total + ' ejercicios completados';
+  const count = Array.from({length:total},(_,index) => draft[index]).filter(step => step && (step.done || setSummary(step))).length;
+  $('planStatus').textContent = count + ' de ' + total + ' ejercicios con registro';
   $('finishPlan').disabled = count === 0;
 }
 exerciseDays.forEach(([day], index) => {
@@ -923,12 +998,20 @@ exerciseDays.forEach(([day], index) => {
   $('planDay').append(option);
 });
 $('planDay').onchange = event => { planDay = Number(event.target.value); renderPlan(); };
-document.querySelectorAll('[data-place]').forEach(tab => tab.addEventListener('click',renderPlan));
+document.querySelectorAll('[data-place]').forEach(tab => tab.addEventListener('click', () => {
+  $('trainingPanel').hidden = false;
+  $('nutrition').hidden = true;
+  $('nutritionTab').setAttribute('aria-pressed','false');
+  renderPlan();
+}));
 $('finishPlan').onclick = () => {
   const [day,title,,steps] = exerciseDays[planDay];
   const draft = planDraft();
-  const completed = steps.flatMap((_, index) => draft[index]?.done ? [{variant:draft[index].variant,log:draft[index].log}] : []);
-  if (!completed.length || (completed.length < steps.length && !confirm('¿Guardar la sesión con los ejercicios que ya completaste?'))) return;
+  const completed = steps.flatMap((_, index) => {
+    const step = draft[index];
+    return step && (step.done || setSummary(step)) ? [{variant:step.variant,series:step.series,log:step.log}] : [];
+  });
+  if (!completed.length || (completed.length < steps.length && !confirm('¿Guardar la sesión con los ejercicios que registraste?'))) return;
   const session = {id:crypto.randomUUID(),title:day + ' · ' + title,place,date:new Date().toISOString(),steps:completed};
   if (change({...state.data,history:[session,...state.data.history]},'Sesión guardada.')) {
     delete drafts[place + ':' + planDay];
