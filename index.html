@@ -145,7 +145,7 @@ function valid(value) {
 }
 let state = load();
 if (!valid(state?.data)) state = {data:initial,sha:null,dirty:false};
-let place = 'Casa';
+let place = state.data.profile?.preferredPlace === 'Gimnasio' ? 'Gimnasio' : 'Casa';
 let editing = null;
 let token = '';
 let connected = false;
@@ -1001,7 +1001,7 @@ nutritionForm.oninput = showNutritionTargets;
 nutritionForm.onsubmit = event => {
   event.preventDefault();
   const fields = nutritionForm.elements;
-  const profile = {cm:fields.cm.valueAsNumber,maintenance:fields.maintenance.valueAsNumber || null};
+  const profile = {...state.data.profile,cm:fields.cm.valueAsNumber,maintenance:fields.maintenance.valueAsNumber || null};
   const kg = fields.kg.valueAsNumber;
   const all = measurements();
   const day = localDay();
@@ -1299,9 +1299,27 @@ $('finishPlan').onclick = () => {
     renderPlan();
   }
 };
+function applyPersonalSetup() {
+  const match = /^#mi-perfil=(\d+(?:\.\d+)?),(\d+(?:\.\d+)?)$/.exec(location.hash);
+  if (!match) return false;
+  const cm = Number(match[1]);
+  const kg = Number(match[2]);
+  const day = localDay();
+  if (!validProfile({cm}) || !validMeasure({day,kg})) return false;
+  const profile = {...(state.data.profile || {cm,maintenance:null}),preferredPlace:'Gimnasio'};
+  const data = {...state.data,profile};
+  const next = measurements().length ? data : withMeasurement(data,{day,kg,waist:null});
+  const saved = persistPersonal(next,'nutritionStatus','Perfil personal listo. Gimnasio quedó como tu vista inicial.');
+  if (saved) {
+    place = profile.preferredPlace;
+    window.history.replaceState(null,'',location.pathname + location.search);
+  }
+  return true;
+}
+const personalSetup = applyPersonalSetup();
 loadNutrition();
 renderPlan();
-
 render();
+if (personalSetup) selectPanel('nutrition');
 </script>
 </html>
