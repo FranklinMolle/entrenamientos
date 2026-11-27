@@ -5,12 +5,32 @@
 <title>Mi entrenamiento</title>
 <style>
 :root{color-scheme:dark;--accent:#ddf987;--panel:#202922;--line:#455448}*{box-sizing:border-box}body{margin:0;background:#141a16;color:#f4faf5;font:1rem/1.5 system-ui,sans-serif}main{width:min(66rem,calc(100% - 2rem));margin:auto;padding:2.5rem 0}header{border-bottom:1px solid var(--line);margin-bottom:1.25rem;padding-bottom:1.25rem}h1{font-size:clamp(2.8rem,8vw,5.75rem);letter-spacing:-.07em;line-height:1;margin:0 0 1rem}h2,h3,p{margin:0 0 .65rem}header p,.muted{color:#b9c8bc}.grid{display:grid;grid-template-columns:2fr 1fr;gap:1rem}.card,details{background:var(--panel);border:1px solid var(--line);border-radius:1rem;padding:1rem;margin-bottom:1rem}.row,nav{display:flex;flex-wrap:wrap;gap:.5rem}nav{margin-bottom:1rem}button,input,textarea,select{font:inherit;color:inherit;border:1px solid var(--line);border-radius:.55rem;background:#172019;padding:.55rem .8rem}button{min-height:44px;cursor:pointer}button[aria-pressed=true],.primary{background:var(--accent);color:#222b13;font-weight:700}button:disabled{opacity:.6}label{display:grid;gap:.25rem;margin-bottom:.7rem}textarea{min-height:6rem;resize:vertical}summary{cursor:pointer;font-weight:700}details[open] summary{margin-bottom:.75rem}article{border-top:1px solid var(--line);padding:.9rem 0}article:last-child{padding-bottom:0}li{margin:.35rem 0}output{display:block;font-size:3rem;font-variant-numeric:tabular-nums}a,[role=status]{color:var(--accent)}:focus-visible{outline:2px solid var(--accent);outline-offset:3px}[hidden]{display:none!important}@media(max-width:700px){.grid{grid-template-columns:1fr}main{padding-top:1.25rem}}
+.plan-day{max-width:19rem}.plan-step{padding:1rem 0;border-top:1px solid var(--line)}.plan-step::marker{color:var(--accent);font-weight:700}.plan-step h3{margin-bottom:.3rem}.plan-step input:not([type=checkbox]),.plan-step select{width:100%;min-width:0}.plan-check{display:flex;align-items:center;gap:.6rem}.plan-check input{width:1.2rem;height:1.2rem;accent-color:var(--accent)}.plan-step details{margin:.7rem 0;padding:.65rem}.photo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}.photo-grid figure{margin:0}.photo-grid img{display:block;width:100%;height:auto;aspect-ratio:1.5;object-fit:contain;background:#fff;border-radius:.45rem}.photo-grid figcaption{color:#b9c8bc}.plan .row{align-items:center}#planSteps{padding-left:1.45rem}.plan p{overflow-wrap:anywhere}
+#activeRest{position:sticky;bottom:.55rem;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:.5rem;width:min(100%,26rem);margin:.5rem auto 0;background:#29352a;box-shadow:0 4px 18px #0008;border:1px solid var(--line);border-radius:.65rem;padding:.5rem .65rem}#activeRest span{font-variant-numeric:tabular-nums;font-weight:700}.history-log{margin:.6rem 0}
 </style>
 <main>
 <header><h1>Mi entrenamiento</h1><p>Organiza tus rutinas y lleva el registro de tus sesiones.</p></header>
 <nav aria-label="Lugar"><button data-place="Casa">Casa</button><button data-place="Gimnasio">Gimnasio</button></nav>
 <div class="grid"><div>
-<section class="card"><h2>Rutinas</h2><div id="routines"></div></section>
+<section class="card plan" aria-labelledby="planHeading">
+<h2 id="planHeading">Tu plan semanal</h2>
+<p class="muted">Cinco días de pesas con prioridad de espalda y brazos. El sábado es opcional. Elige Casa o Gimnasio arriba. En casa las opciones requieren una combinación de mancuernas, banda, barra de dominadas o pelota según el día.</p>
+<label class="plan-day">Día de entrenamiento<select id="planDay"></select></label>
+<h3 id="planTitle"></h3>
+<p id="planReason" class="muted"></p>
+<ol id="planSteps"></ol>
+<div class="row"><button class="primary" id="finishPlan" disabled>Guardar sesión</button><span id="planStatus" role="status"></span></div>
+</section>
+<details><summary>Cómo progresar y por qué cambié la rutina</summary>
+<p><strong>Orden.</strong> Empieza con el ejercicio que más te interesa fortalecer. Para hipertrofia, los estudios encuentran resultados similares con distintos órdenes. Si un equipo está ocupado, elige una alternativa en el mismo puesto y continúa. <a href="https://pubmed.ncbi.nlm.nih.gov/32077380/">Nunes y cols., revisión con metaanálisis</a>.</p>
+<p><strong>Calentamiento.</strong> Haz unos minutos suaves si los necesitas. Antes del primer ejercicio pesado, realiza 2–3 series de aproximación con carga creciente y sin fatiga. Las series del plan son las de trabajo.</p>
+<p><strong>Carga.</strong> Elige un peso con el que puedas completar el rango dejando normalmente 1–3 repeticiones en reserva. Cuando llegues al extremo alto en todas las series con técnica estable, aumenta la carga lo mínimo disponible. En movimientos unilaterales haz el rango por lado. Registra lo que hiciste para comparar la misma variante.</p>
+<p><strong>Volumen.</strong> Quité repeticiones de estímulo entre aperturas, jalones y curls para dejar una base más manejable. Puedes empezar con dos series por accesorio si vienes de una pausa y aumentarlas si mantienes el rendimiento y te recuperas. El plan combina varias series por músculo a lo largo de la semana. Llegar al fallo en todas las series es innecesario. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12965823/">Posicionamiento ACSM, 2026</a>.</p>
+<p><strong>Descanso.</strong> Los ejercicios grandes tienen entre 2 y 3 minutos de pausa. Si faltan repeticiones por fatiga, usa más tiempo antes de la siguiente serie. <a href="https://pubmed.ncbi.nlm.nih.gov/26605807/">Schoenfeld y cols., ensayo sobre descansos</a>.</p>
+<p><strong>Alternativas.</strong> Buscan conservar el patrón y los músculos principales cuando es posible. Un remo en casa es un recurso para entrenar dorsales si no hay barra, aunque cambia la dirección del tirón. Ajusta el peso o la dificultad desde cero al cambiar de variante. <a href="https://pubmed.ncbi.nlm.nih.gov/29541130/">Kikuchi y Nakazato, ensayo de press y flexiones</a>.</p>
+<p><a href="https://github.com/yuhonas/free-exercise-db">Créditos de las fotos de técnica</a>.</p>
+</details>
+<section class="card"><h2>Rutinas personalizadas</h2><div id="routines"></div></section>
 <details id="editor"><summary>Crear o editar rutina</summary>
 <form id="routineForm">
 <label>Nombre<input name="title" required maxlength="100"></label>
@@ -29,7 +49,9 @@
 <form id="connect"><label>Token de GitHub<input id="secret" type="password" required autocomplete="off" spellcheck="false"></label><button class="primary">Conectar</button></form>
 <div id="sync" class="row" hidden><button id="up">Subir datos</button><button id="down">Cargar datos</button><button id="disconnect">Desconectar</button></div>
 <p id="syncStatus" role="status"></p></details>
-</aside></div></main>
+</aside></div>
+<div id="activeRest" hidden><span id="restReadout"></span><button id="restToggle">Pausar</button><button id="restHide">Cerrar</button></div>
+</main>
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
@@ -120,6 +142,18 @@ function render() {
     item.append(button('Quitar', () => {
       if (confirm('¿Quitar la sesión?')) change({...state.data,history:state.data.history.filter(s => s.id !== session.id)},'Sesión eliminada.');
     }));
+    if (Array.isArray(session.steps) && session.steps.length) {
+      const details = element('details');
+      details.className = 'history-log';
+      details.append(element('summary','Ejercicios de la sesión'));
+      const list = element('ul');
+      session.steps.forEach(step => {
+        if (!step || !Object.hasOwn(exerciseCatalog,step.variant)) return;
+        list.append(element('li',exerciseCatalog[step.variant][1] + (step.log ? ' · ' + step.log : '')));
+      });
+      details.append(list);
+      item.append(details);
+    }
     return item;
   }));
 }
@@ -154,6 +188,8 @@ function tick() {
   const seconds = Math.ceil(remaining / 1000);
   $('timer').textContent = [Math.floor(seconds/60),seconds%60].map(n => String(n).padStart(2,'0')).join(':');
   $('start').textContent = end ? 'Pausar' : 'Iniciar';
+  $('restReadout').textContent = remaining ? 'Descanso ' + $('timer').textContent : 'Descanso terminado';
+  $('restToggle').textContent = $('start').textContent;
 }
 $('start').onclick = () => {
   if (end) { tick(); end = 0; }
@@ -162,6 +198,8 @@ $('start').onclick = () => {
 };
 function reset() { end = 0; remaining = duration; tick(); }
 $('reset').onclick = reset;
+$('restToggle').onclick = () => $('start').onclick();
+$('restHide').onclick = () => { $('activeRest').hidden = true; };
 document.querySelectorAll('[data-time]').forEach(b => b.onclick = () => { duration = Number(b.dataset.time) * 1000; reset(); });
 setInterval(tick,200);
 async function api(url, payload) {
@@ -215,6 +253,7 @@ $('down').onclick = () => sync(async () => {
     && !confirm('¿Reemplazar tus cambios locales con la versión de GitHub?')) { syncStatus('Carga cancelada.'); return; }
   save(current.data,current.sha,false);
   closeEditor();
+  renderPlan();
   syncStatus('Datos cargados desde GitHub.');
 });
 $('up').onclick = () => sync(async () => {
@@ -235,6 +274,466 @@ $('up').onclick = () => sync(async () => {
   save(state.data,result.content.sha,changedDuringUpload);
   syncStatus(changedDuringUpload ? 'Se subió la versión anterior. Aún tienes cambios locales.' : 'Datos subidos al repositorio privado.');
 });
+const exerciseCatalog = {
+  "i": [
+    "Incline_Dumbbell_Press",
+    "Press inclinado con mancuernas",
+    "Pecho superior",
+    "Ajusta el banco a unos 25–30°. Baja con control y mantén los pies apoyados."
+  ],
+  "p": [
+    "Dumbbell_Bench_Press",
+    "Press plano con mancuernas",
+    "Pecho",
+    "Apoya ambos pies y baja las mancuernas a los lados del pecho."
+  ],
+  "m": [
+    "Leverage_Chest_Press",
+    "Press de pecho en máquina",
+    "Pecho",
+    "Ajusta el asiento para que las manijas queden a la altura del pecho."
+  ],
+  "f": [
+    "Pushups",
+    "Flexiones",
+    "Pecho",
+    "Mantén cabeza, cadera y talones alineados. Baja el pecho entre las manos."
+  ],
+  "fi": [
+    "Incline_Push-Up",
+    "Flexiones con manos elevadas",
+    "Pecho",
+    "Apoya las manos en una superficie firme. Bajar la altura aumenta la dificultad."
+  ],
+  "fd": [
+    "Push-Ups_With_Feet_Elevated",
+    "Flexiones con pies elevados",
+    "Pecho y hombro anterior",
+    "Usa un apoyo firme y bajo. Mantén el tronco alineado."
+  ],
+  "fp": [
+    "Dumbbell_Floor_Press",
+    "Press con mancuernas en el suelo",
+    "Pecho",
+    "Desciende hasta que los brazos toquen suavemente el suelo y vuelve a empujar."
+  ],
+  "l": [
+    "Side_Lateral_Raise",
+    "Elevación lateral con mancuernas",
+    "Deltoides lateral",
+    "Sube los brazos hacia los lados hasta cerca de la altura del hombro, sin balancearte."
+  ],
+  "lb": [
+    "Lateral_Raise_-_With_Bands",
+    "Elevación lateral con banda",
+    "Deltoides lateral",
+    "Pisa la banda y eleva los brazos lateralmente sin encoger los hombros."
+  ],
+  "t": [
+    "Cable_Rope_Overhead_Triceps_Extension",
+    "Extensión de tríceps sobre cabeza en polea",
+    "Tríceps",
+    "Mantén los brazos cerca de la cabeza y mueve principalmente los codos."
+  ],
+  "td": [
+    "Standing_Dumbbell_Triceps_Extension",
+    "Extensión sobre cabeza con mancuerna",
+    "Tríceps",
+    "Sujeta una mancuerna con ambas manos. Flexiona y extiende los codos con control."
+  ],
+  "tb": [
+    "Band_Skull_Crusher",
+    "Extensión de tríceps acostado con banda",
+    "Tríceps",
+    "Sigue el anclaje de la referencia con la banda firme. Mantén los brazos estables."
+  ],
+  "tp": [
+    "Triceps_Pushdown_-_Rope_Attachment",
+    "Extensión de tríceps con cuerda",
+    "Tríceps",
+    "Mantén los codos junto al torso y extiéndelos sin inclinarte sobre la cuerda."
+  ],
+  "tf": [
+    "Push-Ups_-_Close_Triceps_Position",
+    "Flexiones con manos juntas",
+    "Tríceps y pecho",
+    "Coloca las manos un poco dentro del ancho de hombros y mantén el tronco firme."
+  ],
+  "j": [
+    "Wide-Grip_Lat_Pulldown",
+    "Jalón al pecho",
+    "Dorsales",
+    "Usa un agarre cómodo, poco más ancho que los hombros. Lleva los codos hacia abajo."
+  ],
+  "jn": [
+    "Close-Grip_Front_Lat_Pulldown",
+    "Jalón neutro",
+    "Dorsales",
+    "Lleva el agarre hacia el pecho sin impulsarte con el torso."
+  ],
+  "ch": [
+    "Chin-Up",
+    "Dominada supina",
+    "Dorsales y bíceps",
+    "Usa una barra firme. Comienza con los brazos extendidos y sube sin balancearte."
+  ],
+  "cha": [
+    "Band_Assisted_Pull-Up",
+    "Dominada asistida con banda",
+    "Dorsales y bíceps",
+    "Revisa que la banda esté en buen estado y bien sujeta a la barra."
+  ],
+  "r": [
+    "Dumbbell_Incline_Row",
+    "Remo con pecho apoyado",
+    "Espalda media y dorsales",
+    "Apoya el pecho en el banco y tira de los codos hacia atrás."
+  ],
+  "rc": [
+    "Seated_Cable_Rows",
+    "Remo sentado en polea",
+    "Espalda media y dorsales",
+    "Mantén el tronco estable y tira hacia la parte baja de las costillas."
+  ],
+  "rd": [
+    "One-Arm_Dumbbell_Row",
+    "Remo unilateral con mancuerna",
+    "Espalda media y dorsales",
+    "Apoya la mano libre en una superficie firme y lleva el codo hacia la cadera."
+  ],
+  "rr": [
+    "Bent_Over_Two-Dumbbell_Row",
+    "Remo inclinado con mancuernas",
+    "Espalda media y dorsales",
+    "Lleva la cadera atrás, mantén el tronco quieto y lleva los codos hacia atrás."
+  ],
+  "rf": [
+    "Reverse_Flyes",
+    "Aperturas inversas con mancuernas",
+    "Deltoides posterior",
+    "Inclina el torso, deja los codos ligeramente flexionados y abre los brazos."
+  ],
+  "rb": [
+    "Band_Pull_Apart",
+    "Apertura con banda",
+    "Deltoides posterior y espalda alta",
+    "Separa las manos sin arquear la espalda ni elevar los hombros."
+  ],
+  "face": [
+    "Face_Pull",
+    "Face pull en polea",
+    "Deltoides posterior y espalda alta",
+    "Tira de la cuerda hacia la altura de la cara con el tronco quieto."
+  ],
+  "curl": [
+    "Barbell_Curl",
+    "Curl con barra",
+    "Bíceps",
+    "Mantén los codos cerca del cuerpo. Puedes usar barra Z si te resulta más cómoda."
+  ],
+  "ci": [
+    "Incline_Dumbbell_Curl",
+    "Curl inclinado con mancuernas",
+    "Bíceps",
+    "Deja los brazos colgando y flexiona los codos sin adelantar los hombros."
+  ],
+  "cm": [
+    "Hammer_Curls",
+    "Curl martillo",
+    "Bíceps y braquial",
+    "Conserva las palmas enfrentadas y evita el impulso del torso."
+  ],
+  "cp": [
+    "One_Arm_Dumbbell_Preacher_Curl",
+    "Curl predicador unilateral",
+    "Bíceps",
+    "Apoya el brazo y controla la bajada sin soltar el peso al final."
+  ],
+  "s": [
+    "Barbell_Full_Squat",
+    "Sentadilla con barra",
+    "Cuádriceps y glúteos",
+    "Usa seguros en el rack, apoya todo el pie y baja hasta una profundidad que controles."
+  ],
+  "g": [
+    "Goblet_Squat",
+    "Sentadilla goblet",
+    "Cuádriceps y glúteos",
+    "Sostén la carga frente al pecho y baja manteniendo el apoyo de todo el pie."
+  ],
+  "bs": [
+    "Bodyweight_Squat",
+    "Sentadilla sin peso",
+    "Cuádriceps y glúteos",
+    "Baja entre las caderas con los pies firmes. Sube con control."
+  ],
+  "lp": [
+    "Leg_Press",
+    "Prensa de piernas",
+    "Cuádriceps y glúteos",
+    "Baja el trineo hasta donde puedas mantener la pelvis apoyada."
+  ],
+  "sp": [
+    "Split_Squat_with_Dumbbells",
+    "Sentadilla dividida con mancuernas",
+    "Cuádriceps y glúteos",
+    "Mantén los pies fijos y flexiona ambas rodillas. Completa las repeticiones por lado."
+  ],
+  "sb": [
+    "Split_Squats",
+    "Sentadilla dividida sin carga",
+    "Cuádriceps y glúteos",
+    "Con un pie delante, baja en vertical y empuja con el pie delantero."
+  ],
+  "le": [
+    "Leg_Extensions",
+    "Extensión de cuádriceps",
+    "Cuádriceps",
+    "Alinea la rodilla con el eje de la máquina y sube sin lanzar la carga."
+  ],
+  "lc": [
+    "Lying_Leg_Curls",
+    "Curl femoral acostado",
+    "Isquiotibiales",
+    "Flexiona las rodillas manteniendo la pelvis sobre el banco."
+  ],
+  "ls": [
+    "Seated_Leg_Curl",
+    "Curl femoral sentado",
+    "Isquiotibiales",
+    "Fija los muslos con la almohadilla y flexiona las rodillas con control."
+  ],
+  "ball": [
+    "Ball_Leg_Curl",
+    "Curl femoral con pelota",
+    "Isquiotibiales",
+    "Eleva la cadera y acerca la pelota flexionando las rodillas."
+  ],
+  "dl": [
+    "Romanian_Deadlift",
+    "Peso muerto rumano",
+    "Isquiotibiales y glúteos",
+    "Flexiona un poco las rodillas, lleva la cadera atrás y mantén la carga cerca de las piernas."
+  ],
+  "ht": [
+    "Barbell_Hip_Thrust",
+    "Hip thrust con barra",
+    "Glúteos",
+    "Apoya la espalda alta y eleva la cadera sin arquear la zona lumbar."
+  ],
+  "gb": [
+    "Single_Leg_Glute_Bridge",
+    "Puente de glúteo a una pierna",
+    "Glúteos",
+    "Con un pie firme, eleva la cadera sin girar la pelvis."
+  ],
+  "bg": [
+    "Barbell_Glute_Bridge",
+    "Puente de glúteos con barra",
+    "Glúteos",
+    "Comienza en el suelo y eleva la cadera con las costillas controladas."
+  ],
+  "ca": [
+    "Standing_Calf_Raises",
+    "Elevación de gemelos en máquina",
+    "Pantorrillas",
+    "Sube sobre la punta de los pies y baja despacio por un recorrido cómodo."
+  ],
+  "cd": [
+    "Standing_Dumbbell_Calf_Raise",
+    "Elevación de gemelos con mancuerna",
+    "Pantorrillas",
+    "Usa un apoyo firme para el equilibrio y controla la subida y la bajada."
+  ],
+  "cb": [
+    "Calf_Raises_-_With_Bands",
+    "Elevación de gemelos con banda",
+    "Pantorrillas",
+    "Pisa la banda con firmeza y eleva los talones sin rebotar."
+  ],
+  "cs": [
+    "Seated_Calf_Raise",
+    "Elevación de gemelos sentado",
+    "Pantorrillas",
+    "Coloca el apoyo sobre el muslo y eleva y baja los talones con control."
+  ],
+  "ab": [
+    "Cable_Crunch",
+    "Crunch en polea",
+    "Abdomen",
+    "Acerca las costillas a la pelvis sin tirar de la cuerda con los brazos."
+  ],
+  "ac": [
+    "Crunches",
+    "Crunch en el suelo",
+    "Abdomen",
+    "Eleva los hombros acercando las costillas a la pelvis sin tirar del cuello."
+  ],
+  "ar": [
+    "Reverse_Crunch",
+    "Crunch inverso",
+    "Abdomen",
+    "Enrolla la pelvis para despegarla ligeramente del suelo sin balancear las piernas."
+  ],
+  "db": [
+    "Dead_Bug",
+    "Dead bug",
+    "Control del tronco",
+    "Extiende brazo y pierna contrarios sin despegar la zona lumbar del suelo."
+  ],
+  "pa": [
+    "Pallof_Press",
+    "Press Pallof",
+    "Control antirrotación",
+    "Con la polea o una banda al costado, extiende los brazos resistiendo el giro. Haz ambos lados."
+  ],
+  "dld": [
+    "Stiff-Legged_Dumbbell_Deadlift",
+    "Bisagra con mancuernas",
+    "Isquiotibiales y glúteos",
+    "Lleva las caderas atrás con las rodillas ligeramente flexionadas. Detén la bajada cuando pierdas el control de la espalda."
+  ],
+  "dlb": [
+    "Band_Good_Morning",
+    "Buenos días con banda",
+    "Isquiotibiales y glúteos",
+    "Pisa la banda y colócala sobre la espalda alta como en la referencia. Lleva las caderas atrás con la espalda estable."
+  ]
+};
+const exerciseDays = [["Lunes","Pecho, hombros y tríceps","Tu press inclinado va primero para priorizar el pecho superior.",[[["i","m"],["fd","f"],3,"8–12",150],[["p","f"],["fp","fi"],3,"8–15",150],[["l","lb"],["l","lb"],3,"12–20",90],[["t","td"],["td","tb"],3,"10–15",90],[["ab","ac"],["ac","ar"],2,"12–18",75]]],["Martes","Espalda y bíceps","Empieza con un tirón vertical para priorizar dorsales, seguido de un remo y trabajo directo de brazos.",[[["j","ch"],["cha","ch","rd"],3,"8–12",150],[["r","rc"],["rd","rr"],3,"8–15",150],[["rf","face"],["rf","rb"],2,"12–20",90],[["curl","ci"],["cm","ci"],3,"8–15",90],[["cm","cp"],["ci","cm"],2,"10–15",90]]],["Miércoles","Piernas A y abdomen","Primero el ejercicio que requiere más práctica y estabilidad. Después acumula series de cuádriceps.",[[["s","lp"],["g","bs"],3,"6–12",180],[["lp","sp"],["sp","bs"],3,"10–15",150],[["le","g"],["sb","g"],2,"12–18",90],[["lc","ls"],["ball","dlb"],3,"10–15",90],[["ca","cd"],["cd","cb"],3,"12–20",90],[["ar","db"],["ar","db"],2,"10–15",75]]],["Jueves","Torso con prioridad de espalda","El segundo estímulo de la semana empieza por la espalda en V.",[[["jn","ch"],["ch","cha","rd"],3,"8–12",150],[["rc","rd"],["rr","rd"],3,"8–15",150],[["m","i"],["f","fp"],3,"8–15",150],[["l","lb"],["lb","l"],3,"12–20",90],[["face","rf"],["rb","rf"],2,"12–20",90]]],["Viernes","Piernas B y brazos","Haz el rumano antes de los curls para que el agarre llegue fresco. Luego entrena brazos y terminas con gemelos.",[[["dl","dld"],["dld","dlb"],3,"8–12",180],[["ht","bg"],["gb","dld"],2,"8–15",120],[["ls","lc"],["ball","dlb"],3,"10–15",90],[["ci","cp"],["ci","cm"],3,"10–15",90],[["tp","td"],["tf","td"],3,"10–15",90],[["cs","cd"],["cd","cb"],3,"12–20",90]]],["Sábado","Abdomen opcional","Puedes añadir 20–30 minutos de cardio moderado si te apetece y has recuperado. Domingo libre.",[[["ar","ac"],["ar","ac"],3,"12–15",75],[["pa","db"],["pa","db"],2,"10–12 por lado",60]]]];
+const photoBase = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/f00c92c7dcf1216a928a52c3706c7ce8e2f71ed5/exercises/';
+const draftKey = key + ':plan';
+let planDay = 0;
+let drafts = {};
+try { const stored = JSON.parse(localStorage.getItem(draftKey)); if (stored && typeof stored === 'object' && !Array.isArray(stored)) drafts = stored; } catch {}
+function planDraft() {
+  const id = place + ':' + planDay;
+  return drafts[id] ||= {};
+}
+function persistDraft() {
+  try { localStorage.setItem(draftKey,JSON.stringify(drafts)); }
+  catch { $('planStatus').textContent = 'El navegador no pudo guardar el borrador.'; }
+}
+function startRest(seconds) {
+  duration = seconds * 1000;
+  remaining = duration;
+  end = Date.now() + duration;
+  $('activeRest').hidden = false;
+  tick();
+}
+function renderPlan() {
+  const [day,title,reason,steps] = exerciseDays[planDay];
+  $('planTitle').textContent = day + ' · ' + title;
+  $('planReason').textContent = reason;
+  const draft = planDraft();
+  const rows = steps.map(([gym,home,sets,reps,rest], index) => {
+    const variants = place === 'Casa' ? home : gym;
+    const saved = draft[index] ||= {variant:variants[0],done:false,log:''};
+    const item = element('li');
+    item.className = 'plan-step';
+    const head = element('h3');
+    const meta = element('p', sets + ' series × ' + reps + ' · ' + (rest % 60 === 0 ? rest / 60 + ' min' : rest + ' s') + ' de descanso');
+    const done = document.createElement('input');
+    done.type = 'checkbox';
+    done.checked = saved.done;
+    const doneLabel = element('label','Ejercicio completado');
+    doneLabel.className = 'plan-check';
+    doneLabel.prepend(done);
+    done.onchange = () => { saved.done = done.checked; persistDraft(); updatePlanStatus(steps.length); };
+    const swap = document.createElement('select');
+    variants.forEach((id, order) => {
+      const option = element('option',(order ? 'Alternativa · ' : 'Principal · ') + exerciseCatalog[id][1]);
+      option.value = id;
+      swap.append(option);
+    });
+    swap.value = variants.includes(saved.variant) ? saved.variant : variants[0];
+    const swapLabel = element('label','Si el equipo está ocupado o no está disponible');
+    swapLabel.append(swap);
+    const reference = element('details');
+    reference.append(element('summary','Técnica y fotos'));
+    const cues = element('p');
+    const gallery = element('div');
+    gallery.className = 'photo-grid';
+    reference.append(cues,gallery);
+    const log = document.createElement('input');
+    log.maxLength = 120;
+    log.placeholder = 'Ejemplo: 16 kg · 12, 11, 10';
+    log.value = saved.log;
+    log.oninput = () => { saved.log = log.value; persistDraft(); };
+    const logLabel = element('label','Carga y repeticiones (opcional)');
+    logLabel.append(log);
+    const previous = element('p');
+    previous.className = 'muted';
+    function showVariant() {
+      const [photos,name,muscle,technique] = exerciseCatalog[swap.value];
+      head.textContent = name;
+      cues.textContent = muscle + ' · ' + technique;
+      const last = state.data.history.find(session => Array.isArray(session.steps) && session.steps.some(step => step && step.variant === swap.value && step.log));
+      previous.textContent = last ? 'Último registro: ' + last.steps.find(step => step && step.variant === swap.value && step.log).log : '';
+      previous.hidden = !last;
+      gallery.replaceChildren();
+      if (!reference.open) return;
+      ['Inicio','Final'].forEach((position, frame) => {
+        const figure = element('figure');
+        const img = document.createElement('img');
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.referrerPolicy = 'no-referrer';
+        img.alt = name + ' · ' + position;
+        img.src = photoBase + photos + '/' + frame + '.jpg';
+        const caption = element('figcaption',position);
+        img.onerror = () => { caption.textContent = position + ' · imagen no disponible'; };
+        figure.append(img,caption);
+        gallery.append(figure);
+      });
+    }
+    reference.ontoggle = () => { if (reference.open && !gallery.childElementCount) showVariant(); };
+    swap.onchange = () => {
+      if ((saved.done || saved.log) && !confirm('¿Cambiar la variante y reiniciar el registro de este ejercicio?')) { swap.value = saved.variant; return; }
+      saved.variant = swap.value;
+      saved.done = false;
+      saved.log = '';
+      done.checked = false;
+      log.value = '';
+      persistDraft();
+      updatePlanStatus(steps.length);
+      showVariant();
+    };
+    const restButton = button('Iniciar descanso',() => startRest(rest));
+    item.append(head,meta,swapLabel,reference,previous,logLabel,doneLabel,restButton);
+    showVariant();
+    return item;
+  });
+  $('planSteps').replaceChildren(...rows);
+  updatePlanStatus(steps.length);
+}
+function updatePlanStatus(total) {
+  const draft = planDraft();
+  const count = Array.from({length:total},(_,index) => draft[index]?.done).filter(Boolean).length;
+  $('planStatus').textContent = count + ' de ' + total + ' ejercicios completados';
+  $('finishPlan').disabled = count === 0;
+}
+exerciseDays.forEach(([day], index) => {
+  const option = element('option',day);
+  option.value = index;
+  $('planDay').append(option);
+});
+$('planDay').onchange = event => { planDay = Number(event.target.value); renderPlan(); };
+document.querySelectorAll('[data-place]').forEach(tab => tab.addEventListener('click',renderPlan));
+$('finishPlan').onclick = () => {
+  const [day,title,,steps] = exerciseDays[planDay];
+  const draft = planDraft();
+  const completed = steps.flatMap((_, index) => draft[index]?.done ? [{variant:draft[index].variant,log:draft[index].log}] : []);
+  if (!completed.length || (completed.length < steps.length && !confirm('¿Guardar la sesión con los ejercicios que ya completaste?'))) return;
+  const session = {id:crypto.randomUUID(),title:day + ' · ' + title,place,date:new Date().toISOString(),steps:completed};
+  if (change({...state.data,history:[session,...state.data.history]},'Sesión guardada.')) {
+    delete drafts[place + ':' + planDay];
+    persistDraft();
+    renderPlan();
+  }
+};
+renderPlan();
+
 render();
 </script>
 </html>
