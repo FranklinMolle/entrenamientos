@@ -9,14 +9,16 @@
 #activeRest{position:sticky;bottom:.55rem;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:.5rem;width:min(100%,26rem);margin:.5rem auto 0;background:#181818;box-shadow:0 4px 18px #0008;border:1px solid var(--line);border-radius:.65rem;padding:.5rem .65rem}#activeRest span{font-variant-numeric:tabular-nums;font-weight:700}.history-log{margin:.6rem 0}
 .exercise-rest{display:inline-block;margin:0 0 .65rem;border:1px solid var(--line);border-radius:.45rem;padding:.22rem .55rem;color:var(--accent);font-weight:700}.posture-tag{font-size:.9rem;color:var(--accent)}.meal-guide p{padding:.6rem 0;border-bottom:1px solid var(--line)}#nutritionWeight{max-width:10rem;margin-bottom:.6rem}
 .series-log{min-width:0;border:1px solid var(--line);border-radius:.65rem;margin:.8rem 0;padding:.65rem}.series-log legend{padding:0 .3rem;font-weight:700}.set-row{display:grid;grid-template-columns:minmax(3.2rem,.6fr) minmax(0,1fr) minmax(0,1.35fr);align-items:end;gap:.5rem}.set-row strong{align-self:center}.set-row label{font-size:.9rem}.set-row input{padding:.5rem}.plan-cardio{border-left:2px solid var(--line);padding-left:.6rem}
+.data-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:.55rem;align-items:end;margin-bottom:.75rem}.data-form label{margin:0;min-width:0}.data-form input{width:100%;min-width:0}.nutrition-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:.6rem}.nutrition-stats div{border:1px solid var(--line);background:#171717;border-radius:.65rem;padding:.75rem}.nutrition-stats dt{color:#bdbdbd}.nutrition-stats dd{margin:0;font-size:1.22rem;font-weight:700}#progressChart{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:.65rem;margin-bottom:1rem;background:#0c0c0c}#measureHistory button{margin:.2rem}.equipment-note{margin-bottom:.75rem}
 </style>
 <main>
 <header><h1>Mi entrenamiento</h1><p>Organiza tus rutinas y lleva el registro de tus sesiones.</p></header>
-<nav aria-label="Secciones"><button data-place="Casa" aria-controls="trainingPanel">Casa</button><button data-place="Gimnasio" aria-controls="trainingPanel">Gimnasio</button><button id="nutritionTab" aria-controls="nutrition" aria-pressed="false">Alimentación</button></nav>
+<nav aria-label="Secciones"><button data-place="Casa" aria-controls="trainingPanel">Casa</button><button data-place="Gimnasio" aria-controls="trainingPanel">Gimnasio</button><button id="nutritionTab" aria-controls="nutrition" aria-pressed="false">Alimentación</button><button id="progressTab" aria-controls="progress" aria-pressed="false">Avance</button></nav>
 <div class="grid" id="trainingPanel"><div>
 <section class="card plan" aria-labelledby="planHeading">
 <h2 id="planHeading">Tu plan semanal</h2>
 <p class="muted">Cinco días de pesas con prioridad de espalda y brazos. El sábado es opcional. Elige Casa o Gimnasio arriba. En casa las opciones requieren una combinación de mancuernas, banda, barra de dominadas o pelota según el día.</p>
+<p class="equipment-note muted" id="gymEquipment" hidden><strong>Smart Fit.</strong> El plan prioriza máquinas y poleas, con alternativas si la estación está ocupada o tu sede tiene otro equipo. <a href="https://pubmed.ncbi.nlm.nih.gov/37535335/">Estudio sobre máquinas, pesos libres e hipertrofia</a>.</p>
 <label class="plan-day">Día de entrenamiento<select id="planDay"></select></label>
 <h3 id="planTitle"></h3>
 <p id="planReason" class="muted"></p>
@@ -59,16 +61,26 @@
 <aside><section class="card"><h2>Descanso</h2><output id="timer" aria-live="off">01:00</output>
 <div class="row"><button data-time="30">30 s</button><button data-time="60">60 s</button><button data-time="90">90 s</button></div>
 <p></p><div class="row"><button id="start" class="primary">Iniciar</button><button id="reset">Reiniciar</button></div></section>
-<details><summary>Sincronización privada</summary>
-<p class="muted">Usa un token de acceso detallado de GitHub con permiso de lectura y escritura en Contents para el repositorio entrenamientos-datos. El token se conserva solo mientras esta página está abierta.</p>
-<p><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Crear token en GitHub</a></p>
-<form id="connect"><label>Token de GitHub<input id="secret" type="password" required autocomplete="off" spellcheck="false"></label><button class="primary">Conectar</button></form>
-<div id="sync" class="row" hidden><button id="up">Subir datos</button><button id="down">Cargar datos</button><button id="disconnect">Desconectar</button></div>
-<p id="syncStatus" role="status"></p></details>
+
 </aside></div>
 <section id="nutrition" class="card" aria-labelledby="nutritionHeading" hidden>
 <h2 id="nutritionHeading" tabindex="-1">Alimentación para ganar músculo</h2>
 <p class="muted">Guía de volumen para tu entrenamiento de las 7 p. m.</p>
+<form id="nutritionForm" class="data-form">
+<label>Estatura (cm)<input name="cm" type="number" min="100" max="250" step="0.1" inputmode="decimal" required></label>
+<label>Peso (kg)<input name="kg" type="number" min="30" max="300" step="0.1" inputmode="decimal" required></label>
+<label>Calorías de mantenimiento (opcional)<input name="maintenance" type="number" min="1000" max="8000" step="1" inputmode="numeric"></label>
+<button class="primary">Guardar perfil</button>
+</form>
+<p id="nutritionStatus" role="status"></p>
+<p class="muted">Si tu peso se ha mantenido estable, usa como referencia el promedio de calorías que consumiste durante esas semanas. Con peso y estatura por sí solos no se puede fijar tu mantenimiento.</p>
+<dl class="nutrition-stats" aria-label="Objetivos diarios orientativos">
+<div><dt>Proteína</dt><dd id="proteinTarget"></dd></div>
+<div><dt>Calorías para volumen</dt><dd id="energyTarget"></dd></div>
+<div><dt>Grasa</dt><dd id="fatTarget"></dd></div>
+<div><dt>Carbohidratos</dt><dd id="carbTarget"></dd></div>
+</dl>
+<p class="muted">La distribución orientativa usa 1,8 g/kg de proteína para calcular el resto, alrededor del 25 % de las calorías en grasa y el resto en carbohidratos. Ajusta las porciones según tu progreso y preferencias.</p>
 <h3>Empieza con un superávit pequeño</h3>
 <p>Si tu peso lleva unas dos semanas estable y quieres priorizar ganar músculo, prueba añadir alrededor del <strong>5 % sobre tu ingesta de mantenimiento</strong>. Por ejemplo, si mantienes tu peso con 2.300 kcal, serían unas 115 kcal extra al día. Si no cuentas calorías, empieza con una porción pequeña adicional, como una arepa pequeña o un vaso de leche. Si tu peso ya sube lentamente y tus cargas mejoran, puedes mantener las porciones.</p>
 <p>Compara el promedio semanal de peso, la cintura y tu rendimiento durante dos o tres semanas. Si el peso sigue estable y quieres subir, añade un poco de comida. Si la cintura sube rápido, reduce el extra. En un ensayo pequeño con personas entrenadas, ganar peso más rápido tendió a aumentar sobre todo el grosor de los pliegues cutáneos. <a href="https://pubmed.ncbi.nlm.nih.gov/37914977/">Ensayo sobre superávit y entrenamiento</a></p>
@@ -80,11 +92,32 @@
 <p><strong>6:15–6:40 p. m. · Merienda opcional</strong><br>Si llegas con hambre o han pasado varias horas desde que comiste, prueba banano, yogur o tostada. Para este horario, mi recomendación es <strong>0 mg de cafeína como preentreno</strong>. Lleva agua y bebe según la sed durante la sesión.</p>
 <p><strong>8:15–9:00 p. m. · Cena, según cuándo termines</strong><br>Combina una fuente de proteína con carbohidratos y verduras. Por ejemplo, pescado con papa y ensalada, pollo con arroz y verduras o lentejas con arroz y huevo. Puedes apuntar a 20–40 g de proteína en la comida. La proteína total del día importa más que cenar a una hora exacta.</p>
 </div>
-<label for="nutritionWeight">Peso actual en kg (opcional)</label>
-<input id="nutritionWeight" type="number" min="30" max="300" step="0.1" inputmode="decimal">
-<p id="proteinTarget" role="status">Referencia para hipertrofia: aproximadamente 1,6–2,0 g de proteína/kg al día.</p>
 <p><strong>Energizantes y sueño.</strong> Si te acuestas alrededor de las 11 p. m., una pauta conservadora es dejar la cafeína para antes de las 3 p. m., y adelantarla si te afecta el sueño. Revisa los miligramos por envase y suma café, té, energizantes y preentrenos. Evita combinar un energizante con un preentreno estimulante. Para la mayoría de los adultos, la FDA toma 400 mg al día como referencia general, no como meta. En un ensayo, una dosis única de 400 mg alteró el sueño incluso tomada mucho antes de acostarse.</p>
 <p><a href="https://doi.org/10.1186/s12970-017-0189-4">Nutrición alrededor del entrenamiento</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/28698222/">Metaanálisis sobre proteína y masa muscular</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/39377163/">Ensayo de cafeína y sueño</a> · <a href="https://www.fda.gov/consumers/consumer-updates/spilling-beans-how-much-caffeine-too-much">FDA sobre cafeína</a></p>
+</section>
+<section id="progress" class="card" aria-labelledby="progressHeading" hidden>
+<h2 id="progressHeading" tabindex="-1">Avance</h2>
+<p>Registra tu peso y cintura en condiciones similares. La gráfica de cargas usa el mayor peso anotado en cada sesión para el mismo ejercicio y lugar.</p>
+<form id="measureForm" class="data-form">
+<label>Fecha<input name="day" type="date" required></label>
+<label>Peso (kg)<input name="kg" type="number" min="30" max="300" step="0.1" inputmode="decimal" required></label>
+<label>Cintura (cm, opcional)<input name="waist" type="number" min="30" max="300" step="0.1" inputmode="decimal"></label>
+<button class="primary">Guardar medida</button>
+</form>
+<p id="measureStatus" role="status"></p>
+<label>Ver en la gráfica<select id="progressMetric"><option value="weight">Peso corporal</option><option value="waist">Cintura</option></select></label>
+<p id="progressSummary" role="status"></p>
+<canvas id="progressChart" width="800" height="300" aria-hidden="true" hidden></canvas>
+<details><summary>Ver datos de la gráfica</summary><ul id="progressValues"></ul></details>
+<details><summary>Mediciones guardadas</summary><ul id="measureHistory"></ul></details>
+<h3>Guardar y sincronizar mis datos</h3>
+<p>Las mediciones, el perfil de alimentación, las rutinas y las sesiones guardadas quedan en este navegador. Para llevarlos a otro dispositivo, conecta tu repositorio privado y pulsa <strong>Subir datos</strong>. En el otro dispositivo conecta el mismo repositorio y pulsa <strong>Cargar datos</strong>. Los borradores de sesiones se guardan en el dispositivo hasta que guardes la sesión.</p>
+<details><summary>Conectar repositorio privado</summary>
+<p class="muted">Usa un token de acceso detallado de GitHub con permiso de lectura y escritura en Contents para el repositorio entrenamientos-datos. El token se conserva solo mientras esta página está abierta.</p>
+<p><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Crear token en GitHub</a></p>
+<form id="connect"><label>Token de GitHub<input id="secret" type="password" required autocomplete="off" spellcheck="false"></label><button class="primary">Conectar</button></form>
+<div id="sync" class="row" hidden><button id="up">Subir datos</button><button id="down">Cargar datos</button><button id="disconnect">Desconectar</button></div>
+<p id="syncStatus" role="status"></p></details>
 </section>
 <div id="activeRest" hidden><span id="restReadout"></span><button id="restToggle">Pausar</button><button id="restHide">Cerrar</button></div>
 </main>
@@ -106,7 +139,9 @@ function entry(item) { return item && label(item.id) && label(item.title) && ['C
 function valid(value) {
   return value && Array.isArray(value.routines) && Array.isArray(value.history)
     && value.routines.every(r => entry(r) && Array.isArray(r.exercises) && r.exercises.length && r.exercises.every(label))
-    && value.history.every(s => entry(s) && Number.isFinite(Date.parse(s.date)));
+    && value.history.every(s => entry(s) && Number.isFinite(Date.parse(s.date)))
+    && (value.profile == null || validProfile(value.profile))
+    && (value.measurements == null || (Array.isArray(value.measurements) && value.measurements.every(validMeasure)));
 }
 let state = load();
 if (!valid(state?.data)) state = {data:initial,sha:null,dirty:false};
@@ -171,6 +206,7 @@ function render() {
     return card;
   });
   $('routines').replaceChildren(...(routines.length ? routines : [element('p','Crea una rutina para este lugar.')]));
+  if (!$('progress').hidden) renderProgress();
   $('count').textContent = data.history.length ? 'Sesiones registradas: ' + data.history.length : 'Todavía no hay sesiones registradas.';
   $('history').replaceChildren(...data.history.map(session => {
     const date = new Date(session.date).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'});
@@ -290,6 +326,7 @@ $('down').onclick = () => sync(async () => {
   save(current.data,current.sha,false);
   closeEditor();
   renderPlan();
+  fillMeasurementFields();
   syncStatus('Datos cargados desde GitHub.');
 });
 $('up').onclick = () => sync(async () => {
@@ -796,24 +833,77 @@ const exerciseCatalog = {
     "Extensión de cadera con apoyo en banco",
     "Glúteos y cadena posterior",
     "Úsala solo si tienes un banco y un apoyo que permitan repetir la posición sin que el equipo se mueva. Eleva el tronco hasta alinearlo con las piernas."
+  ],
+  "im": [
+    "Leverage_Incline_Chest_Press",
+    "Press inclinado en máquina",
+    "Pecho superior",
+    "Regula el asiento para que las manijas queden cerca del pecho superior. Mantén la espalda apoyada."
+  ],
+  "sm": [
+    "Smith_Machine_Bench_Press",
+    "Press plano en multipower",
+    "Pecho",
+    "Centra el banco bajo la guía y ajusta los topes antes de cargar peso."
+  ],
+  "rev": [
+    "Reverse_Machine_Flyes",
+    "Aperturas inversas en máquina",
+    "Deltoides posterior",
+    "Ajusta el asiento a la altura de los hombros. Abre los brazos con el pecho apoyado y el cuello cómodo."
+  ],
+  "rem": [
+    "Leverage_Iso_Row",
+    "Remo en máquina de palancas",
+    "Espalda media y dorsales",
+    "Ajusta el apoyo y tira con los codos manteniendo el pecho estable."
+  ],
+  "mc": [
+    "Machine_Preacher_Curls",
+    "Curl predicador en máquina",
+    "Bíceps",
+    "Ajusta el asiento para apoyar los brazos y controla la bajada."
+  ],
+  "hk": [
+    "Hack_Squat",
+    "Sentadilla hack en máquina",
+    "Cuádriceps y glúteos",
+    "Ajusta los seguros. Baja con los talones apoyados y mantén la espalda sobre el respaldo."
+  ],
+  "ss": [
+    "Smith_Machine_Squat",
+    "Sentadilla en multipower",
+    "Cuádriceps y glúteos",
+    "Pon los topes de seguridad y ubica los pies donde el descenso te resulte cómodo."
+  ],
+  "sr": [
+    "Smith_Machine_Stiff-Legged_Deadlift",
+    "Bisagra de cadera en multipower",
+    "Isquiotibiales y glúteos",
+    "Con rodillas ligeramente flexionadas, lleva la cadera atrás y conserva una trayectoria controlada."
+  ],
+  "am": [
+    "Ab_Crunch_Machine",
+    "Crunch en máquina",
+    "Abdomen",
+    "Ajusta el asiento y acerca las costillas a la pelvis sin tirar del cuello."
+  ],
+  "calp": [
+    "Calf_Press_On_The_Leg_Press_Machine",
+    "Gemelos en prensa",
+    "Pantorrillas",
+    "Coloca la parte delantera de los pies firmemente sobre la plataforma. Mantén los seguros según las instrucciones de la máquina."
   ]
 };
-const exerciseDays = [["Lunes","Pecho, hombros y tríceps","Tu press inclinado va primero para priorizar el pecho superior.",[[["i","m","p","fd"],["fd","f","fp","fi"],3,"8–12",150],[["p","f","m","fp"],["fp","fi","f","fd"],3,"8–15",150],[["l","lb","cl","sl"],["l","lb","sl","il"],3,"12–20",90],[["t","td","ez","tb"],["td","tb","d1","tf"],3,"10–15",90],[["ab","ac","ar","cr"],["ac","ar","cr","db"],2,"12–18",75]]],["Martes","Espalda y bíceps","Empieza con un tirón vertical para priorizar dorsales, seguido de un remo y trabajo directo de brazos.",[[["j","ch","vd","uj"],["cha","ch","rd","ir"],3,"8–12",150],[["r","rc","rd","rr"],["rd","rr","ir","r"],3,"8–15",150],[["rf","face","bf","br"],["rf","rb","bf","rr"],2,"12–20",90],[["curl","ci","dc","cp"],["cm","ci","dc","hc"],3,"8–15",90],[["cm","cp","hc","dc"],["ci","cm","dc","hc"],2,"10–15",90]]],["Miércoles","Piernas A y abdomen","Primero el ejercicio que requiere más práctica y estabilidad. Después acumula series de cuádriceps.",[[["s","lp","g","sp"],["g","bs","sp","lu"],3,"6–12",180],[["lp","sp","g","lu"],["sp","bs","lu","su"],3,"10–15",150],[["le","g","sp","su"],["sb","g","lu","su"],2,"12–18",90],[["lc","ls","hc3","hc2"],["ball","hc1","hc2","dlb"],3,"10–15",90],[["ca","cd","c2","cb"],["cd","cb","c3","c1"],3,"12–20",90],[["ar","db","ac","cr"],["ar","db","ac","cr"],2,"10–15",75]]],["Jueves","Torso con prioridad de espalda","El segundo estímulo de la semana empieza por la espalda en V.",[[["jn","ch","j","uj"],["ch","cha","rd","ir"],3,"8–12",150],[["rc","rd","rr","r"],["rr","rd","r","ir"],3,"8–15",150],[["m","i","p","f"],["f","fp","fd","fi"],3,"8–15",150],[["l","lb","cl","sl"],["lb","l","sl","il"],3,"12–20",90],[["face","rf","br","bf"],["rb","rf","bf","rr"],2,"12–20",90]]],["Viernes","Piernas B y brazos","Haz el rumano antes de los curls para que el agarre llegue fresco. Luego entrena brazos y terminas con gemelos.",[[["dl","dld","gm","hx"],["dld","dlb","dl","hx2"],3,"8–12",180],[["ht","bg","gb","hs"],["gb","dld","bg","hx2"],2,"8–15",120],[["ls","lc","hc3","hc1"],["ball","hc1","hc2","dlb"],3,"10–15",90],[["ci","cp","dc","curl"],["ci","cm","dc","hc"],3,"10–15",90],[["tp","td","ez","tf"],["tf","td","tb","d1"],3,"10–15",90],[["cs","cd","c1","ca"],["cd","cb","c1","c3"],3,"12–20",90]]],["Sábado","Abdomen opcional","Puedes añadir 20–30 minutos de cardio moderado si te apetece y has recuperado. Domingo libre.",[[["ar","ac","cr","db"],["ar","ac","cr","db"],3,"12–15",75],[["pa","db","pl","sb1"],["pa","db","pl","sb1"],2,"10–12 por lado",60]]]];
+const exerciseDays = [["Lunes","Pecho, hombros y tríceps","Prioriza el pecho superior con el press inclinado.",[[["im","i","m","p"],["fd","f","fp","fi"],3,"8–12",150],[["m","sm","p","fp"],["fp","fi","f","fd"],3,"8–15",150],[["cl","l","sl","lb"],["l","lb","sl","il"],3,"12–20",90],[["t","td","ez","tb"],["td","tb","d1","tf"],3,"10–15",90],[["ab","am","ac","ar"],["ac","ar","cr","db"],2,"12–18",75]]],["Martes","Espalda y bíceps","Empieza con un tirón vertical para priorizar dorsales, seguido de un remo y trabajo directo de brazos.",[[["j","vd","uj","ch"],["cha","ch","rd","ir"],3,"8–12",150],[["rem","rc","r","rd"],["rd","rr","ir","r"],3,"8–15",150],[["rev","face","rf","br"],["rf","rb","bf","rr"],2,"12–20",90],[["mc","curl","dc","cp"],["cm","ci","dc","hc"],3,"8–15",90],[["cm","hc","dc","cp"],["ci","cm","dc","hc"],2,"10–15",90]]],["Miércoles","Piernas A y abdomen","Comienza con la sentadilla hack o su alternativa y sigue con el trabajo de cuádriceps.",[[["hk","ss","s","g"],["g","bs","sp","lu"],3,"6–12",180],[["lp","g","sp","lu"],["sp","bs","lu","su"],3,"10–15",150],[["le","g","sp","su"],["sb","g","lu","su"],2,"12–18",90],[["lc","ls","hc3","hc2"],["ball","hc1","hc2","dlb"],3,"10–15",90],[["ca","calp","cd","cb"],["cd","cb","c3","c1"],3,"12–20",90],[["am","ar","ab","ac"],["ar","db","ac","cr"],2,"10–15",75]]],["Jueves","Torso con prioridad de espalda","El segundo estímulo de la semana empieza por la espalda en V.",[[["jn","j","uj","ch"],["ch","cha","rd","ir"],3,"8–12",150],[["rc","rem","r","rd"],["rr","rd","r","ir"],3,"8–15",150],[["m","im","p","f"],["f","fp","fd","fi"],3,"8–15",150],[["cl","l","sl","lb"],["lb","l","sl","il"],3,"12–20",90],[["face","rev","rf","bf"],["rb","rf","bf","rr"],2,"12–20",90]]],["Viernes","Piernas B y brazos","Haz primero la bisagra de cadera para llegar con el agarre fresco. Luego trabaja brazos y gemelos.",[[["sr","dl","dld","hx"],["dld","dlb","dl","hx2"],3,"8–12",180],[["ht","bg","gb","hs"],["gb","dld","bg","hx2"],2,"8–15",120],[["ls","lc","hc3","hc1"],["ball","hc1","hc2","dlb"],3,"10–15",90],[["mc","ci","cp","curl"],["ci","cm","dc","hc"],3,"10–15",90],[["tp","td","ez","tf"],["tf","td","tb","d1"],3,"10–15",90],[["cs","c1","ca","calp"],["cd","cb","c1","c3"],3,"12–20",90]]],["Sábado","Abdomen opcional","Puedes añadir 20–30 minutos de cardio moderado si te apetece y has recuperado. Domingo libre.",[[["ar","ac","cr","db"],["ar","ac","cr","db"],3,"12–15",75],[["pa","db","pl","sb1"],["pa","db","pl","sb1"],2,"10–12 por lado",60]]]];
 const photoBase = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/f00c92c7dcf1216a928a52c3706c7ce8e2f71ed5/exercises/';
-const postureExercises = new Set('r rc rd rr ir rf rb face bf br'.split(' '));
+const postureExercises = new Set('r rc rd rr ir rf rb face bf br rem rev'.split(' '));
 const unilateralExercises = new Set('il d1 uj rd cp sp sb lu su hc2 hc3 c1 c3 gb db pa sb1'.split(' '));
 function formatRest(seconds) {
   const minutes = Math.floor(seconds / 60);
   const remainder = seconds % 60;
   return [minutes ? minutes + ' min' : '',remainder ? remainder + ' s' : ''].filter(Boolean).join(' ');
 }
-const nutritionWeight = $('nutritionWeight');
-nutritionWeight.oninput = () => {
-  const kg = nutritionWeight.valueAsNumber;
-  $('proteinTarget').textContent = Number.isFinite(kg) && nutritionWeight.validity.valid
-    ? 'Referencia diaria: ' + Math.round(kg * 1.6) + '–' + Math.round(kg * 2) + ' g de proteína.'
-    : 'Referencia para hipertrofia: aproximadamente 1,6–2,0 g de proteína/kg al día.';
-};
 function setSummary(step) {
   const logged = Array.isArray(step.series) ? step.series.flatMap((set,index) => {
     if (!set || (set.kg === '' && set.count === '')) return [];
@@ -856,13 +946,196 @@ function renderSeries(fieldset, saved, sets, timed, perSide) {
   fieldset.replaceChildren(legend,hint,...rows);
   if (saved.log) fieldset.append(element('p','Nota anterior: ' + saved.log));
 }
-$('nutritionTab').onclick = () => {
-  $('trainingPanel').hidden = true;
-  $('nutrition').hidden = false;
-  $('nutritionTab').setAttribute('aria-pressed','true');
-  document.querySelectorAll('[data-place]').forEach(tab => tab.setAttribute('aria-pressed','false'));
-  $('nutritionHeading').focus();
+const numberFormat = new Intl.NumberFormat('es-CO',{maximumFractionDigits:1,useGrouping:false});
+const dateFormat = new Intl.DateTimeFormat('es-CO',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'});
+const shortDateFormat = new Intl.DateTimeFormat('es-CO',{day:'numeric',month:'short',timeZone:'UTC'});
+const nutritionForm = $('nutritionForm');
+const measureForm = $('measureForm');
+const metricSelect = $('progressMetric');
+function localDay(date = new Date()) {
+  return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+}
+function validMeasure(record) {
+  return record && typeof record.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(record.day)
+    && Number.isFinite(Date.parse(record.day)) && new Date(record.day).toISOString().slice(0,10) === record.day && Number.isFinite(record.kg) && record.kg >= 30 && record.kg <= 300
+    && (record.waist == null || (Number.isFinite(record.waist) && record.waist >= 30 && record.waist <= 300));
+}
+function validProfile(profile) {
+  return profile && Number.isFinite(profile.cm) && profile.cm >= 100 && profile.cm <= 250
+    && (profile.maintenance == null || (Number.isInteger(profile.maintenance) && profile.maintenance >= 1000 && profile.maintenance <= 8000));
+}
+function measurements() {
+  return [...(state.data.measurements || [])].sort((a,b) => a.day.localeCompare(b.day));
+}
+function displayNumber(value) { return numberFormat.format(value); }
+function showNutritionTargets() {
+  const fields = nutritionForm.elements;
+  const kg = fields.kg.validity.valid ? fields.kg.valueAsNumber : NaN;
+  const maintenance = fields.maintenance.validity.valid ? fields.maintenance.valueAsNumber : NaN;
+  const protein = Math.round(kg * 1.8);
+  const kcal = Math.round(maintenance * 1.05);
+  const fat = Math.round(kcal * .25 / 9);
+  const carbs = Math.round((kcal - fat * 9 - protein * 4) / 4);
+  $('proteinTarget').textContent = Number.isFinite(kg)
+    ? Math.round(kg * 1.6) + '–' + Math.round(kg * 2) + ' g/día' : '1,6–2,0 g/kg al día';
+  $('energyTarget').textContent = Number.isFinite(kcal) ? displayNumber(kcal) + ' kcal/día' : 'Completa tu mantenimiento';
+  $('fatTarget').textContent = Number.isFinite(fat) ? fat + ' g/día' : '—';
+  $('carbTarget').textContent = Number.isFinite(carbs) && carbs >= 0 ? carbs + ' g/día' : '—';
+}
+function loadNutrition() {
+  const profile = state.data.profile;
+  const latest = measurements().at(-1);
+  nutritionForm.elements.cm.value = profile?.cm ?? '';
+  nutritionForm.elements.maintenance.value = profile?.maintenance ?? '';
+  nutritionForm.elements.kg.value = latest?.kg ?? '';
+  showNutritionTargets();
+}
+function persistPersonal(data,status,message) {
+  try { save(data); $(status).textContent = message; return true; }
+  catch (error) { $(status).textContent = error.message; return false; }
+}
+function withMeasurement(data, record) {
+  return {...data,measurements:[...measurements().filter(item => item.day !== record.day),record]};
+}
+nutritionForm.oninput = showNutritionTargets;
+nutritionForm.onsubmit = event => {
+  event.preventDefault();
+  const fields = nutritionForm.elements;
+  const profile = {cm:fields.cm.valueAsNumber,maintenance:fields.maintenance.valueAsNumber || null};
+  const kg = fields.kg.valueAsNumber;
+  const all = measurements();
+  const day = localDay();
+  const previous = all.find(measure => measure.day === day);
+  const data = {...state.data,profile};
+  const next = all.at(-1)?.kg === kg ? data : withMeasurement(data,{day,kg,waist:previous?.waist ?? null});
+  if (!validProfile(profile) || !validMeasure({day,kg})) return;
+  if (persistPersonal(next,'nutritionStatus','Perfil guardado en este navegador.')) fillMeasurementFields();
 };
+function fillMeasurementFields() {
+  const fields = measureForm.elements;
+  const record = measurements().find(item => item.day === fields.day.value);
+  fields.kg.value = record?.kg ?? '';
+  fields.waist.value = record?.waist ?? '';
+}
+measureForm.elements.day.value = localDay();
+measureForm.elements.day.onchange = fillMeasurementFields;
+measureForm.onsubmit = event => {
+  event.preventDefault();
+  const fields = measureForm.elements;
+  const record = {day:fields.day.value,kg:fields.kg.valueAsNumber,waist:fields.waist.valueAsNumber || null};
+  if (!validMeasure(record)) return;
+  persistPersonal(withMeasurement(state.data,record),'measureStatus','Medida guardada en este navegador.');
+};
+function exerciseTrends() {
+  const trends = new Map();
+  state.data.history.forEach(session => {
+    if (!Array.isArray(session.steps)) return;
+    const day = localDay(new Date(session.date));
+    session.steps.forEach(step => {
+      if (!step || !Object.hasOwn(exerciseCatalog,step.variant) || !Array.isArray(step.series)) return;
+      const weights = step.series.map(series => Number(series?.kg)).filter(kg => Number.isFinite(kg) && kg > 0);
+      if (!weights.length) return;
+      const key = session.place + ':' + step.variant;
+      if (!trends.has(key)) trends.set(key,{label:exerciseCatalog[step.variant][1] + ' · ' + session.place,days:new Map()});
+      const days = trends.get(key).days;
+      days.set(day,Math.max(days.get(day) || 0,...weights));
+    });
+  });
+  return trends;
+}
+function drawProgress(points,unit) {
+  const canvas = $('progressChart');
+  canvas.hidden = !points.length;
+  if (!points.length) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  const [width,height] = [canvas.width,canvas.height];
+  const [left,right,top,bottom] = [64,width-24,24,height-48];
+  const first = Date.parse(points[0][0]);
+  const span = Date.parse(points.at(-1)[0]) - first;
+  const values = points.map(point => point[1]);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const pad = Math.max(.5,(max-min)*.12);
+  const low = min-pad;
+  const high = max+pad;
+  const x = day => span ? left + (Date.parse(day)-first)/span*(right-left) : (left+right)/2;
+  const y = value => bottom-(value-low)/(high-low)*(bottom-top);
+  ctx.clearRect(0,0,width,height);
+  ctx.font = '17px system-ui';
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#ccc';
+  for (let i=0;i<=4;i++) {
+    const value = low + (high-low)*i/4;
+    const row = y(value);
+    ctx.strokeStyle = '#393939';
+    ctx.beginPath(); ctx.moveTo(left,row); ctx.lineTo(right,row); ctx.stroke();
+    ctx.fillText(displayNumber(value),left-8,row+5);
+  }
+  ctx.textAlign = 'left';
+  ctx.fillText(unit,left,17);
+  ctx.textAlign = 'center';
+  const dated = span ? [points[0],points.at(-1)] : [points[0]];
+  dated.forEach(([day]) => ctx.fillText(shortDateFormat.format(new Date(day)),x(day),bottom+30));
+  ctx.beginPath();
+  points.forEach(([day,value],index) => index ? ctx.lineTo(x(day),y(value)) : ctx.moveTo(x(day),y(value)));
+  ctx.strokeStyle = '#f5f5f5';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.lineWidth = 1;
+  ctx.fillStyle = '#f5f5f5';
+  points.forEach(([day,value]) => { ctx.beginPath(); ctx.arc(x(day),y(value),4,0,2*Math.PI); ctx.fill(); });
+}
+function renderProgress() {
+  const trends = exerciseTrends();
+  const selected = metricSelect.value || 'weight';
+  const options = [['weight','Peso corporal'],['waist','Cintura'],...[...trends].map(([key,trend]) => [key,trend.label])];
+  metricSelect.replaceChildren(...options.map(([key,label]) => {
+    const option = element('option',label);
+    option.value = key;
+    return option;
+  }));
+  metricSelect.value = options.some(([key]) => key === selected) ? selected : 'weight';
+  const metric = metricSelect.value;
+  const unit = metric === 'waist' ? 'cm' : 'kg';
+  const all = measurements();
+  const points = (metric === 'weight' ? all.map(item => [item.day,item.kg])
+    : metric === 'waist' ? all.filter(item => item.waist != null).map(item => [item.day,item.waist])
+    : [...trends.get(metric).days]).sort(([a],[b]) => a.localeCompare(b));
+  const latest = points.at(-1);
+  const delta = latest ? Math.round((latest[1]-points[0][1])*10)/10 : 0;
+  $('progressSummary').textContent = latest ? 'Último: ' + displayNumber(latest[1]) + ' ' + unit
+    + (points.length > 1 ? ' · Cambio desde el primero: ' + (delta > 0 ? '+' : '') + displayNumber(delta) + ' ' + unit : '')
+    : 'Guarda un registro para empezar la gráfica.';
+  $('progressValues').replaceChildren(...points.map(([day,value]) => element('li',dateFormat.format(new Date(day)) + ' · ' + displayNumber(value) + ' ' + unit)));
+  $('measureHistory').replaceChildren(...all.slice().reverse().map(record => {
+    const row = element('li',dateFormat.format(new Date(record.day)) + ' · ' + displayNumber(record.kg) + ' kg'
+      + (record.waist == null ? '' : ' · ' + displayNumber(record.waist) + ' cm') + ' ');
+    row.append(button('Editar',() => {
+      measureForm.elements.day.value = record.day;
+      fillMeasurementFields();
+      measureForm.elements.kg.focus();
+    }),button('Quitar',() => {
+      if (confirm('¿Quitar esta medida?')) {
+        if (persistPersonal({...state.data,measurements:measurements().filter(item => item.day !== record.day)},'measureStatus','Medida eliminada.')) fillMeasurementFields();
+      }
+    }));
+    return row;
+  }));
+  drawProgress(points,unit);
+}
+metricSelect.onchange = renderProgress;
+function selectPanel(id) {
+  ['nutrition','progress'].forEach(panel => {
+    $(panel).hidden = panel !== id;
+    $(panel+'Tab').setAttribute('aria-pressed',String(panel === id));
+  });
+  $('trainingPanel').hidden = id !== 'trainingPanel';
+  document.querySelectorAll('[data-place]').forEach(tab => tab.setAttribute('aria-pressed',String(id === 'trainingPanel' && tab.dataset.place === place)));
+  if (id !== 'trainingPanel') $(id+'Heading').focus();
+}
+$('nutritionTab').onclick = () => { loadNutrition(); selectPanel('nutrition'); };
+$('progressTab').onclick = () => { selectPanel('progress'); fillMeasurementFields(); renderProgress(); };
 const cardioByDay = [
   'Cardio después de pesas · 15–20 min de caminata inclinada o caminata rápida.',
   '',
@@ -893,14 +1166,23 @@ function startRest(seconds) {
 function renderPlan() {
   const [day,title,reason,steps] = exerciseDays[planDay];
   $('planTitle').textContent = day + ' · ' + title;
-  $('planReason').textContent = reason;
+  $('gymEquipment').hidden = place !== 'Gimnasio';
+  $('planReason').textContent = place === 'Casa' && planDay === 2 ? 'Comienza con una sentadilla y luego pasa al trabajo unilateral.' : reason;
   $('dayCardio').textContent = cardioByDay[planDay];
   $('dayCardio').hidden = !cardioByDay[planDay];
   const draft = planDraft();
   const rows = steps.map(([gym,home,sets,reps,rest], index) => {
-    const variants = place === 'Casa' ? home : gym;
-    const saved = draft[index] ||= {variant:variants[0],done:false,series:[]};
+    const suggested = place === 'Casa' ? home : gym;
+    const saved = draft[index] ||= {variant:suggested[0],done:false,series:[]};
     if (!Array.isArray(saved.series)) saved.series = [];
+    let variants = suggested;
+    if (!suggested.includes(saved.variant)) {
+      if (Object.hasOwn(exerciseCatalog,saved.variant) && (saved.done || setSummary(saved))) {
+        variants = [...suggested.slice(0,3),saved.variant];
+      } else {
+        saved.variant = suggested[0];
+      }
+    }
     const item = element('li');
     item.className = 'plan-step';
     const head = element('h3');
@@ -999,9 +1281,7 @@ exerciseDays.forEach(([day], index) => {
 });
 $('planDay').onchange = event => { planDay = Number(event.target.value); renderPlan(); };
 document.querySelectorAll('[data-place]').forEach(tab => tab.addEventListener('click', () => {
-  $('trainingPanel').hidden = false;
-  $('nutrition').hidden = true;
-  $('nutritionTab').setAttribute('aria-pressed','false');
+  selectPanel('trainingPanel');
   renderPlan();
 }));
 $('finishPlan').onclick = () => {
@@ -1019,6 +1299,7 @@ $('finishPlan').onclick = () => {
     renderPlan();
   }
 };
+loadNutrition();
 renderPlan();
 
 render();
