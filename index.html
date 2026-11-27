@@ -7,6 +7,7 @@
 :root{color-scheme:dark;--accent:#ddf987;--panel:#202922;--line:#455448}*{box-sizing:border-box}body{margin:0;background:#141a16;color:#f4faf5;font:1rem/1.5 system-ui,sans-serif}main{width:min(66rem,calc(100% - 2rem));margin:auto;padding:2.5rem 0}header{border-bottom:1px solid var(--line);margin-bottom:1.25rem;padding-bottom:1.25rem}h1{font-size:clamp(2.8rem,8vw,5.75rem);letter-spacing:-.07em;line-height:1;margin:0 0 1rem}h2,h3,p{margin:0 0 .65rem}header p,.muted{color:#b9c8bc}.grid{display:grid;grid-template-columns:2fr 1fr;gap:1rem}.card,details{background:var(--panel);border:1px solid var(--line);border-radius:1rem;padding:1rem;margin-bottom:1rem}.row,nav{display:flex;flex-wrap:wrap;gap:.5rem}nav{margin-bottom:1rem}button,input,textarea,select{font:inherit;color:inherit;border:1px solid var(--line);border-radius:.55rem;background:#172019;padding:.55rem .8rem}button{min-height:44px;cursor:pointer}button[aria-pressed=true],.primary{background:var(--accent);color:#222b13;font-weight:700}button:disabled{opacity:.6}label{display:grid;gap:.25rem;margin-bottom:.7rem}textarea{min-height:6rem;resize:vertical}summary{cursor:pointer;font-weight:700}details[open] summary{margin-bottom:.75rem}article{border-top:1px solid var(--line);padding:.9rem 0}article:last-child{padding-bottom:0}li{margin:.35rem 0}output{display:block;font-size:3rem;font-variant-numeric:tabular-nums}a,[role=status]{color:var(--accent)}:focus-visible{outline:2px solid var(--accent);outline-offset:3px}[hidden]{display:none!important}@media(max-width:700px){.grid{grid-template-columns:1fr}main{padding-top:1.25rem}}
 .plan-day{max-width:19rem}.plan-step{padding:1rem 0;border-top:1px solid var(--line)}.plan-step::marker{color:var(--accent);font-weight:700}.plan-step h3{margin-bottom:.3rem}.plan-step input:not([type=checkbox]),.plan-step select{width:100%;min-width:0}.plan-check{display:flex;align-items:center;gap:.6rem}.plan-check input{width:1.2rem;height:1.2rem;accent-color:var(--accent)}.plan-step details{margin:.7rem 0;padding:.65rem}.photo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}.photo-grid figure{margin:0}.photo-grid img{display:block;width:100%;height:auto;aspect-ratio:1.5;object-fit:contain;background:#fff;border-radius:.45rem}.photo-grid figcaption{color:#b9c8bc}.plan .row{align-items:center}#planSteps{padding-left:1.45rem}.plan p{overflow-wrap:anywhere}
 #activeRest{position:sticky;bottom:.55rem;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:.5rem;width:min(100%,26rem);margin:.5rem auto 0;background:#29352a;box-shadow:0 4px 18px #0008;border:1px solid var(--line);border-radius:.65rem;padding:.5rem .65rem}#activeRest span{font-variant-numeric:tabular-nums;font-weight:700}.history-log{margin:.6rem 0}
+.exercise-rest{display:inline-block;margin:0 0 .65rem;border:1px solid var(--line);border-radius:.45rem;padding:.22rem .55rem;color:var(--accent);font-weight:700}.posture-tag{font-size:.9rem;color:var(--accent)}.meal-guide p{padding:.6rem 0;border-bottom:1px solid var(--line)}#nutritionWeight{max-width:10rem;margin-bottom:.6rem}
 </style>
 <main>
 <header><h1>Mi entrenamiento</h1><p>Organiza tus rutinas y lleva el registro de tus sesiones.</p></header>
@@ -21,6 +22,23 @@
 <ol id="planSteps"></ol>
 <div class="row"><button class="primary" id="finishPlan" disabled>Guardar sesión</button><span id="planStatus" role="status"></span></div>
 </section>
+<details id="posture"><summary>Postura y prominencia del cuello</summary>
+<p>En el plan marqué <strong>Control escapular</strong> en remos, aperturas inversas y face pulls. Entrenan la musculatura que mueve y estabiliza los omóplatos. Hazlos con el cuello en una posición cómoda, sin empujar la cabeza hacia delante ni encoger los hombros.</p>
+<p>En personas con cabeza adelantada se ha estudiado la combinación de estabilización escapular y extensión torácica. La prominencia del cuello puede deberse a la forma de la columna, una acumulación de grasa u otras causas. El ejercicio puede ayudar con algunos problemas posturales y su efecto sobre el bulto depende de la causa. Si la prominencia es nueva, crece o no sabes de dónde viene, conviene una valoración médica. Busca atención pronta si aparece debilidad, entumecimiento o dolor persistente.</p>
+<p><a href="https://pubmed.ncbi.nlm.nih.gov/34870115/">Ensayo sobre postura y control escapular</a> · <a href="https://medlineplus.gov/ency/article/003112.htm">MedlinePlus sobre el bulto detrás del cuello</a></p>
+</details>
+<details id="nutrition"><summary>Alimentación para entrenar a las 7 p. m.</summary>
+<div class="meal-guide">
+<p><strong>5:00–6:00 p. m. · Comida previa</strong><br>Arroz, papa o arepa con pollo, huevos, atún o yogur. Elige una porción que toleres bien y toma agua.</p>
+<p><strong>6:15–6:40 p. m. · Merienda opcional</strong><br>Si llegas con hambre o han pasado varias horas desde que comiste, prueba banano, yogur o tostada. Para este horario, mi recomendación es <strong>0 mg de cafeína como preentreno</strong>. Lleva agua y bebe según la sed durante la sesión.</p>
+<p><strong>8:15–9:00 p. m. · Cena, según cuándo termines</strong><br>Combina una fuente de proteína con carbohidratos y verduras. Por ejemplo, pescado con papa y ensalada, pollo con arroz y verduras o lentejas con arroz y huevo. Puedes apuntar a 20–40 g de proteína en la comida. La proteína total del día importa más que cenar a una hora exacta.</p>
+</div>
+<label for="nutritionWeight">Peso actual en kg (opcional)</label>
+<input id="nutritionWeight" type="number" min="30" max="300" step="0.1" inputmode="decimal">
+<p id="proteinTarget" role="status">Referencia para hipertrofia: aproximadamente 1,6–2,0 g de proteína/kg al día.</p>
+<p><strong>Energizantes y sueño.</strong> Si te acuestas alrededor de las 11 p. m., una pauta conservadora es dejar la cafeína para antes de las 3 p. m., y adelantarla si te afecta el sueño. Revisa los miligramos por envase y suma café, té, energizantes y preentrenos. Evita combinar un energizante con un preentreno estimulante. Para la mayoría de los adultos, la FDA toma 400 mg al día como referencia general, no como meta. En un ensayo, una dosis única de 400 mg alteró el sueño incluso tomada mucho antes de acostarse.</p>
+<p><a href="https://doi.org/10.1186/s12970-017-0189-4">Nutrición alrededor del entrenamiento</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/28698222/">Metaanálisis sobre proteína y masa muscular</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/39377163/">Ensayo de cafeína y sueño</a> · <a href="https://www.fda.gov/consumers/consumer-updates/spilling-beans-how-much-caffeine-too-much">FDA sobre cafeína</a></p>
+</details>
 <details><summary>Cómo progresar y por qué cambié la rutina</summary>
 <p><strong>Orden.</strong> Empieza con el ejercicio que más te interesa fortalecer. Para hipertrofia, los estudios encuentran resultados similares con distintos órdenes. Si un equipo está ocupado, elige una alternativa en el mismo puesto y continúa. <a href="https://pubmed.ncbi.nlm.nih.gov/32077380/">Nunes y cols., revisión con metaanálisis</a>.</p>
 <p><strong>Calentamiento.</strong> Haz unos minutos suaves si los necesitas. Antes del primer ejercicio pesado, realiza 2–3 series de aproximación con carga creciente y sin fatiga. Las series del plan son las de trabajo.</p>
@@ -598,10 +616,186 @@ const exerciseCatalog = {
     "Buenos días con banda",
     "Isquiotibiales y glúteos",
     "Pisa la banda y colócala sobre la espalda alta como en la referencia. Lleva las caderas atrás con la espalda estable."
+  ],
+  "cl": [
+    "Cable_Seated_Lateral_Raise",
+    "Elevación lateral sentada en polea",
+    "Deltoides lateral",
+    "Mantén el tronco quieto y eleva los brazos hacia los lados."
+  ],
+  "sl": [
+    "Seated_Side_Lateral_Raise",
+    "Elevación lateral sentada con mancuernas",
+    "Deltoides lateral",
+    "Siéntate con los pies firmes y eleva los brazos sin balancear el tronco."
+  ],
+  "il": [
+    "One-Arm_Incline_Lateral_Raise",
+    "Elevación lateral unilateral en banco inclinado",
+    "Deltoides lateral",
+    "Apoya el cuerpo en el banco y eleva el brazo lateralmente. Trabaja ambos lados."
+  ],
+  "ez": [
+    "EZ-Bar_Skullcrusher",
+    "Extensión de tríceps acostado con barra Z",
+    "Tríceps",
+    "Mantén los brazos estables y baja la barra despacio flexionando los codos."
+  ],
+  "d1": [
+    "Dumbbell_One-Arm_Triceps_Extension",
+    "Extensión de tríceps a un brazo con mancuerna",
+    "Tríceps",
+    "Mantén el brazo cerca de la cabeza. Flexiona el codo y repite del otro lado."
+  ],
+  "vd": [
+    "V-Bar_Pulldown",
+    "Jalón con maneral en V",
+    "Dorsales",
+    "Mantén el torso estable y lleva el maneral hacia el pecho."
+  ],
+  "uj": [
+    "One_Arm_Lat_Pulldown",
+    "Jalón unilateral en polea",
+    "Dorsales",
+    "Mantén el torso quieto y baja el codo hacia el costado. Alterna lados."
+  ],
+  "ir": [
+    "Inverted_Row",
+    "Remo invertido",
+    "Espalda media y dorsales",
+    "Usa una barra fija y comprobada. Mantén el tronco alineado y acerca el pecho."
+  ],
+  "bf": [
+    "Bent_Over_Dumbbell_Rear_Delt_Raise_With_Head_On_Bench",
+    "Elevación posterior con apoyo en banco",
+    "Deltoides posterior",
+    "Apoya ligeramente la frente y abre los brazos sin cargar el cuello."
+  ],
+  "br": [
+    "Cable_Rope_Rear-Delt_Rows",
+    "Remo alto con cuerda para deltoides posterior",
+    "Deltoides posterior y espalda alta",
+    "Tira con los codos hacia afuera evitando encoger los hombros."
+  ],
+  "dc": [
+    "Seated_Dumbbell_Curl",
+    "Curl sentado con mancuernas",
+    "Bíceps",
+    "Con las palmas hacia arriba, flexiona los codos sin adelantar los hombros."
+  ],
+  "hc": [
+    "Cross_Body_Hammer_Curl",
+    "Curl martillo cruzado",
+    "Bíceps y braquial",
+    "Lleva la mancuerna hacia el hombro contrario sin girar el torso."
+  ],
+  "lu": [
+    "Dumbbell_Rear_Lunge",
+    "Zancada hacia atrás con mancuernas",
+    "Cuádriceps y glúteos",
+    "Da un paso hacia atrás y vuelve empujando con el pie delantero."
+  ],
+  "su": [
+    "Dumbbell_Step_Ups",
+    "Subida a banco con mancuernas",
+    "Cuádriceps y glúteos",
+    "Usa un escalón firme. Empuja con la pierna de arriba y controla la bajada."
+  ],
+  "hc1": [
+    "Platform_Hamstring_Slides",
+    "Curl femoral deslizante",
+    "Isquiotibiales",
+    "Con los talones sobre discos deslizantes, acerca los pies flexionando las rodillas."
+  ],
+  "hc2": [
+    "Seated_Band_Hamstring_Curl",
+    "Curl femoral sentado con banda",
+    "Isquiotibiales",
+    "Fija la banda a un punto estable. Flexiona la rodilla sin levantar el muslo."
+  ],
+  "hc3": [
+    "Standing_Leg_Curl",
+    "Curl femoral de pie en máquina",
+    "Isquiotibiales",
+    "Sujétate al soporte y flexiona una rodilla sin mover la cadera."
+  ],
+  "c1": [
+    "Dumbbell_Seated_One-Leg_Calf_Raise",
+    "Elevación de gemelos sentado a una pierna",
+    "Pantorrillas",
+    "Apoya una mancuerna sobre el muslo y eleva el talón con control."
+  ],
+  "c2": [
+    "Rocking_Standing_Calf_Raise",
+    "Elevación de talones de pie con barra",
+    "Pantorrillas",
+    "Mantén un apoyo firme y ejecuta despacio la fase de elevar talones."
+  ],
+  "c3": [
+    "Calf_Raise_On_A_Dumbbell",
+    "Elevación unilateral de gemelos",
+    "Pantorrillas",
+    "Usa un escalón firme y antideslizante en vez de una mancuerna que pueda rodar. Sujétate para mantener el equilibrio."
+  ],
+  "cr": [
+    "Crunch_-_Hands_Overhead",
+    "Crunch con brazos sobre la cabeza",
+    "Abdomen",
+    "Eleva los hombros con el abdomen y baja sin tirar del cuello."
+  ],
+  "pl": [
+    "Plank",
+    "Plancha en antebrazos",
+    "Control del tronco",
+    "Mantén el cuerpo alineado con las costillas y la pelvis controladas."
+  ],
+  "sb1": [
+    "Side_Bridge",
+    "Plancha lateral",
+    "Control lateral del tronco",
+    "Apoya el codo bajo el hombro y eleva la cadera. Trabaja ambos lados."
+  ],
+  "hx": [
+    "Hyperextensions_Back_Extensions",
+    "Extensión de cadera en banco a 45°",
+    "Isquiotibiales y glúteos",
+    "Coloca el apoyo debajo de la cadera. Sube hasta alinear el tronco con las piernas."
+  ],
+  "gm": [
+    "Good_Morning",
+    "Buenos días con barra",
+    "Isquiotibiales y glúteos",
+    "Usa una carga ligera, flexiona un poco las rodillas y lleva las caderas hacia atrás."
+  ],
+  "hs": [
+    "Reverse_Hyperextension",
+    "Extensión inversa de cadera",
+    "Glúteos y cadena posterior",
+    "Apoya el tronco y eleva las piernas hasta alinearlas con él, sin arquear la espalda."
+  ],
+  "hx2": [
+    "Hyperextensions_With_No_Hyperextension_Bench",
+    "Extensión de cadera con apoyo en banco",
+    "Glúteos y cadena posterior",
+    "Úsala solo si tienes un banco y un apoyo que permitan repetir la posición sin que el equipo se mueva. Eleva el tronco hasta alinearlo con las piernas."
   ]
 };
-const exerciseDays = [["Lunes","Pecho, hombros y tríceps","Tu press inclinado va primero para priorizar el pecho superior.",[[["i","m"],["fd","f"],3,"8–12",150],[["p","f"],["fp","fi"],3,"8–15",150],[["l","lb"],["l","lb"],3,"12–20",90],[["t","td"],["td","tb"],3,"10–15",90],[["ab","ac"],["ac","ar"],2,"12–18",75]]],["Martes","Espalda y bíceps","Empieza con un tirón vertical para priorizar dorsales, seguido de un remo y trabajo directo de brazos.",[[["j","ch"],["cha","ch","rd"],3,"8–12",150],[["r","rc"],["rd","rr"],3,"8–15",150],[["rf","face"],["rf","rb"],2,"12–20",90],[["curl","ci"],["cm","ci"],3,"8–15",90],[["cm","cp"],["ci","cm"],2,"10–15",90]]],["Miércoles","Piernas A y abdomen","Primero el ejercicio que requiere más práctica y estabilidad. Después acumula series de cuádriceps.",[[["s","lp"],["g","bs"],3,"6–12",180],[["lp","sp"],["sp","bs"],3,"10–15",150],[["le","g"],["sb","g"],2,"12–18",90],[["lc","ls"],["ball","dlb"],3,"10–15",90],[["ca","cd"],["cd","cb"],3,"12–20",90],[["ar","db"],["ar","db"],2,"10–15",75]]],["Jueves","Torso con prioridad de espalda","El segundo estímulo de la semana empieza por la espalda en V.",[[["jn","ch"],["ch","cha","rd"],3,"8–12",150],[["rc","rd"],["rr","rd"],3,"8–15",150],[["m","i"],["f","fp"],3,"8–15",150],[["l","lb"],["lb","l"],3,"12–20",90],[["face","rf"],["rb","rf"],2,"12–20",90]]],["Viernes","Piernas B y brazos","Haz el rumano antes de los curls para que el agarre llegue fresco. Luego entrena brazos y terminas con gemelos.",[[["dl","dld"],["dld","dlb"],3,"8–12",180],[["ht","bg"],["gb","dld"],2,"8–15",120],[["ls","lc"],["ball","dlb"],3,"10–15",90],[["ci","cp"],["ci","cm"],3,"10–15",90],[["tp","td"],["tf","td"],3,"10–15",90],[["cs","cd"],["cd","cb"],3,"12–20",90]]],["Sábado","Abdomen opcional","Puedes añadir 20–30 minutos de cardio moderado si te apetece y has recuperado. Domingo libre.",[[["ar","ac"],["ar","ac"],3,"12–15",75],[["pa","db"],["pa","db"],2,"10–12 por lado",60]]]];
+const exerciseDays = [["Lunes","Pecho, hombros y tríceps","Tu press inclinado va primero para priorizar el pecho superior.",[[["i","m","p","fd"],["fd","f","fp","fi"],3,"8–12",150],[["p","f","m","fp"],["fp","fi","f","fd"],3,"8–15",150],[["l","lb","cl","sl"],["l","lb","sl","il"],3,"12–20",90],[["t","td","ez","tb"],["td","tb","d1","tf"],3,"10–15",90],[["ab","ac","ar","cr"],["ac","ar","cr","db"],2,"12–18",75]]],["Martes","Espalda y bíceps","Empieza con un tirón vertical para priorizar dorsales, seguido de un remo y trabajo directo de brazos.",[[["j","ch","vd","uj"],["cha","ch","rd","ir"],3,"8–12",150],[["r","rc","rd","rr"],["rd","rr","ir","r"],3,"8–15",150],[["rf","face","bf","br"],["rf","rb","bf","rr"],2,"12–20",90],[["curl","ci","dc","cp"],["cm","ci","dc","hc"],3,"8–15",90],[["cm","cp","hc","dc"],["ci","cm","dc","hc"],2,"10–15",90]]],["Miércoles","Piernas A y abdomen","Primero el ejercicio que requiere más práctica y estabilidad. Después acumula series de cuádriceps.",[[["s","lp","g","sp"],["g","bs","sp","lu"],3,"6–12",180],[["lp","sp","g","lu"],["sp","bs","lu","su"],3,"10–15",150],[["le","g","sp","su"],["sb","g","lu","su"],2,"12–18",90],[["lc","ls","hc3","hc2"],["ball","hc1","hc2","dlb"],3,"10–15",90],[["ca","cd","c2","cb"],["cd","cb","c3","c1"],3,"12–20",90],[["ar","db","ac","cr"],["ar","db","ac","cr"],2,"10–15",75]]],["Jueves","Torso con prioridad de espalda","El segundo estímulo de la semana empieza por la espalda en V.",[[["jn","ch","j","uj"],["ch","cha","rd","ir"],3,"8–12",150],[["rc","rd","rr","r"],["rr","rd","r","ir"],3,"8–15",150],[["m","i","p","f"],["f","fp","fd","fi"],3,"8–15",150],[["l","lb","cl","sl"],["lb","l","sl","il"],3,"12–20",90],[["face","rf","br","bf"],["rb","rf","bf","rr"],2,"12–20",90]]],["Viernes","Piernas B y brazos","Haz el rumano antes de los curls para que el agarre llegue fresco. Luego entrena brazos y terminas con gemelos.",[[["dl","dld","gm","hx"],["dld","dlb","dl","hx2"],3,"8–12",180],[["ht","bg","gb","hs"],["gb","dld","bg","hx2"],2,"8–15",120],[["ls","lc","hc3","hc1"],["ball","hc1","hc2","dlb"],3,"10–15",90],[["ci","cp","dc","curl"],["ci","cm","dc","hc"],3,"10–15",90],[["tp","td","ez","tf"],["tf","td","tb","d1"],3,"10–15",90],[["cs","cd","c1","ca"],["cd","cb","c1","c3"],3,"12–20",90]]],["Sábado","Abdomen opcional","Puedes añadir 20–30 minutos de cardio moderado si te apetece y has recuperado. Domingo libre.",[[["ar","ac","cr","db"],["ar","ac","cr","db"],3,"12–15",75],[["pa","db","pl","sb1"],["pa","db","pl","sb1"],2,"10–12 por lado",60]]]];
 const photoBase = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/f00c92c7dcf1216a928a52c3706c7ce8e2f71ed5/exercises/';
+const postureExercises = new Set('r rc rd rr ir rf rb face bf br'.split(' '));
+const unilateralExercises = new Set('il d1 uj rd cp sp sb lu su hc2 hc3 c1 c3 gb db pa sb1'.split(' '));
+function formatRest(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const remainder = seconds % 60;
+  return [minutes ? minutes + ' min' : '',remainder ? remainder + ' s' : ''].filter(Boolean).join(' ');
+}
+const nutritionWeight = $('nutritionWeight');
+nutritionWeight.oninput = () => {
+  const kg = nutritionWeight.valueAsNumber;
+  $('proteinTarget').textContent = Number.isFinite(kg) && nutritionWeight.validity.valid
+    ? 'Referencia diaria: ' + Math.round(kg * 1.6) + '–' + Math.round(kg * 2) + ' g de proteína.'
+    : 'Referencia para hipertrofia: aproximadamente 1,6–2,0 g de proteína/kg al día.';
+};
 const draftKey = key + ':plan';
 let planDay = 0;
 let drafts = {};
@@ -632,7 +826,11 @@ function renderPlan() {
     const item = element('li');
     item.className = 'plan-step';
     const head = element('h3');
-    const meta = element('p', sets + ' series × ' + reps + ' · ' + (rest % 60 === 0 ? rest / 60 + ' min' : rest + ' s') + ' de descanso');
+    const meta = element('p');
+    const restLabel = element('p','Descanso entre series: ' + formatRest(rest));
+    restLabel.className = 'exercise-rest';
+    const postureLabel = element('p','Control escapular · trabajo de postura');
+    postureLabel.className = 'posture-tag';
     const done = document.createElement('input');
     done.type = 'checkbox';
     done.checked = saved.done;
@@ -642,7 +840,7 @@ function renderPlan() {
     done.onchange = () => { saved.done = done.checked; persistDraft(); updatePlanStatus(steps.length); };
     const swap = document.createElement('select');
     variants.forEach((id, order) => {
-      const option = element('option',(order ? 'Alternativa · ' : 'Principal · ') + exerciseCatalog[id][1]);
+      const option = element('option',(order ? 'Alternativa ' + order + ' · ' : 'Principal · ') + exerciseCatalog[id][1]);
       option.value = id;
       swap.append(option);
     });
@@ -667,6 +865,11 @@ function renderPlan() {
     function showVariant() {
       const [photos,name,muscle,technique] = exerciseCatalog[swap.value];
       head.textContent = name;
+      const id = swap.value;
+      const dosage = id === 'pl' ? '25–40 s' : id === 'sb1' ? '20–35 s por lado'
+        : reps + (unilateralExercises.has(id) && !reps.includes('por lado') ? ' por lado' : '');
+      meta.textContent = sets + ' series × ' + dosage;
+      postureLabel.hidden = !postureExercises.has(id);
       cues.textContent = muscle + ' · ' + technique;
       const last = state.data.history.find(session => Array.isArray(session.steps) && session.steps.some(step => step && step.variant === swap.value && step.log));
       previous.textContent = last ? 'Último registro: ' + last.steps.find(step => step && step.variant === swap.value && step.log).log : '';
@@ -699,8 +902,8 @@ function renderPlan() {
       updatePlanStatus(steps.length);
       showVariant();
     };
-    const restButton = button('Iniciar descanso',() => startRest(rest));
-    item.append(head,meta,swapLabel,reference,previous,logLabel,doneLabel,restButton);
+    const restButton = button('Iniciar descanso de ' + formatRest(rest),() => startRest(rest));
+    item.append(head,meta,restLabel,postureLabel,swapLabel,reference,previous,logLabel,doneLabel,restButton);
     showVariant();
     return item;
   });
