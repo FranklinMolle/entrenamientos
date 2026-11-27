@@ -10,6 +10,7 @@
 .exercise-rest{display:inline-block;margin:0 0 .65rem;border:1px solid var(--line);border-radius:.45rem;padding:.22rem .55rem;color:var(--accent);font-weight:700}.posture-tag{font-size:.9rem;color:var(--accent)}.meal-guide p{padding:.6rem 0;border-bottom:1px solid var(--line)}#nutritionWeight{max-width:10rem;margin-bottom:.6rem}
 .series-log{min-width:0;border:1px solid var(--line);border-radius:.65rem;margin:.8rem 0;padding:.65rem}.series-log legend{padding:0 .3rem;font-weight:700}.set-row{display:grid;grid-template-columns:minmax(3.2rem,.6fr) minmax(0,1fr) minmax(0,1.35fr);align-items:end;gap:.5rem}.set-row strong{align-self:center}.set-row label{font-size:.9rem}.set-row input{padding:.5rem}.plan-cardio{border-left:2px solid var(--line);padding-left:.6rem}
 .data-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:.55rem;align-items:end;margin-bottom:.75rem}.data-form label{margin:0;min-width:0}.data-form input{width:100%;min-width:0}.nutrition-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:.6rem}.nutrition-stats div{border:1px solid var(--line);background:#171717;border-radius:.65rem;padding:.75rem}.nutrition-stats dt{color:#bdbdbd}.nutrition-stats dd{margin:0;font-size:1.22rem;font-weight:700}#progressChart{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:.65rem;margin-bottom:1rem;background:#0c0c0c}#measureHistory button{margin:.2rem}.equipment-note{margin-bottom:.75rem}
+#warmupSteps{padding-left:1.3rem}#warmupSteps li{padding:.45rem 0}.warmup-photos{max-width:29rem}
 </style>
 <main>
 <header><h1>Mi entrenamiento</h1><p>Organiza tus rutinas y lleva el registro de tus sesiones.</p></header>
@@ -1186,26 +1187,53 @@ function startRest(seconds) {
   tick();
 }
 const warmupPrep = [
-  'Haz 6–8 círculos de brazos por sentido y 6 flexiones contra la pared.',
-  'Haz 8 remos sin carga y 6 movimientos suaves de los omóplatos.',
-  'Haz 8 sentadillas sin peso y 6 desplazamientos de rodilla hacia delante por lado, con el talón apoyado.',
-  'Haz 8 remos sin carga y 6 flexiones contra la pared.',
-  'Haz 8 bisagras de cadera sin peso y 8 puentes de glúteos.',
-  'Haz 6 movimientos lentos de pelvis y 4 repeticiones suaves del primer ejercicio.'
+  [['Arm_Circles','Círculos de brazos','6–8 por sentido.'],[exerciseCatalog.fi[0],exerciseCatalog.fi[1],'6 repeticiones suaves con un apoyo alto y firme.']],
+  [[exerciseCatalog.rb[0],exerciseCatalog.rb[1],'8 repeticiones suaves si tienes banda.'],['Arm_Circles','Círculos de brazos','6 por sentido, con los hombros relajados.']],
+  [[exerciseCatalog.bs[0],exerciseCatalog.bs[1],'8 repeticiones controladas.'],['Ankle_Circles','Círculos de tobillo','6 por sentido y por pie.']],
+  [[exerciseCatalog.rb[0],exerciseCatalog.rb[1],'8 repeticiones suaves si tienes banda.'],[exerciseCatalog.fi[0],exerciseCatalog.fi[1],'6 repeticiones con un apoyo alto y firme.']],
+  [[exerciseCatalog.gm[0],'Bisagra de cadera sin peso','8 repeticiones. La foto muestra la misma bisagra con barra.'],['Pelvic_Tilt_Into_Bridge','Puente de glúteos','8 repeticiones suaves.']],
+  [['Standing_Pelvic_Tilt','Basculación de pelvis de pie','6 repeticiones lentas.']]
 ];
 const noLoadWarmup = new Set('fd f fi tf ch cha ir ar ac cr db'.split(' '));
+function fillExercisePhotos(gallery, photos, name, frames = ['Inicio','Final']) {
+  gallery.replaceChildren(...frames.map((position,index) => {
+    const figure = element('figure');
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.referrerPolicy = 'no-referrer';
+    img.alt = name + (frames.length > 1 ? ' · ' + position : '');
+    img.src = photoBase + photos + '/' + index + '.jpg';
+    const caption = element('figcaption',position);
+    img.onerror = () => { caption.textContent = position + ' · imagen no disponible'; };
+    figure.append(img,caption);
+    return figure;
+  }));
+}
 function renderWarmup(variant) {
   const gym = place === 'Gimnasio';
-  const aerobic = gym ? (planDay === 2 || planDay === 4 ? 'bicicleta estática' : 'caminadora plana') : 'caminata o marcha en el sitio';
-  const prep = ['3–5 min suaves de ' + aerobic + '.',warmupPrep[planDay]];
-  const name = exerciseCatalog[variant][1];
-  if (planDay !== 5) {
+  const bike = gym && (planDay === 2 || planDay === 4);
+  const aerobic = bike ? ['Bicycling_Stationary','Bicicleta estática']
+    : gym ? ['Walking_Treadmill','Caminadora plana']
+    : ['Trail_Running_Walking','Caminata'];
+  const prep = [[...aerobic,'3–5 min a ritmo suave. En casa también puedes marchar en el sitio.', ['Referencia']],...warmupPrep[planDay]];
+  const [photos,name] = exerciseCatalog[variant];
+  if (planDay === 5) {
+    prep.push([photos,name,'Haz 4 repeticiones suaves para preparar el primer ejercicio.']);
+  } else {
     const ramp = noLoadWarmup.has(variant)
-      ? 'Haz 1–2 series de 4–6 repeticiones fáciles de «' + name + '». Si todavía cuesta, usa una variante más fácil o más asistencia.'
-      : 'En «' + name + '», haz 8–10 repeticiones con carga ligera y luego 4–6 con una carga intermedia. Si la carga de trabajo es alta, añade 2–3 repeticiones con una carga cercana a la de trabajo, sin fatigarte.';
-    prep.push(ramp);
+      ? 'Haz 1–2 series de 4–6 repeticiones fáciles. Si cuesta, usa una variante más sencilla o más asistencia.'
+      : 'Haz 8–10 repeticiones con carga ligera y luego 4–6 con carga intermedia. Si trabajarás con una carga alta, añade 2–3 repeticiones con una carga cercana a la de trabajo, sin fatigarte.';
+    prep.push([photos,'Aproximación · ' + name,ramp]);
   }
-  $('warmupSteps').replaceChildren(...prep.map(step => element('li',step)));
+  $('warmupSteps').replaceChildren(...prep.map(([photos,name,instruction,frames]) => {
+    const row = element('li');
+    const gallery = element('div');
+    gallery.className = 'photo-grid warmup-photos';
+    fillExercisePhotos(gallery,photos,name,frames);
+    row.append(element('strong',name),element('p',instruction),gallery);
+    return row;
+  }));
   $('warmupNote').textContent = planDay === 5
     ? 'Si haces el cardio opcional, los primeros 3–5 min suaves pueden ser parte del bloque.'
     : 'Descansa alrededor de 1 min entre aproximaciones o más si lo necesitas. El calentamiento va antes de las series de trabajo y queda fuera del registro.';
@@ -1282,19 +1310,7 @@ function renderPlan() {
       renderSeries(seriesFields,saved,sets,id === 'pl' || id === 'sb1',unilateralExercises.has(id));
       gallery.replaceChildren();
       if (!reference.open) return;
-      ['Inicio','Final'].forEach((position, frame) => {
-        const figure = element('figure');
-        const img = document.createElement('img');
-        img.loading = 'lazy';
-        img.decoding = 'async';
-        img.referrerPolicy = 'no-referrer';
-        img.alt = name + ' · ' + position;
-        img.src = photoBase + photos + '/' + frame + '.jpg';
-        const caption = element('figcaption',position);
-        img.onerror = () => { caption.textContent = position + ' · imagen no disponible'; };
-        figure.append(img,caption);
-        gallery.append(figure);
-      });
+      fillExercisePhotos(gallery,photos,name);
     }
     reference.ontoggle = () => { if (reference.open && !gallery.childElementCount) showVariant(); };
     swap.onchange = () => {
