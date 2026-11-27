@@ -110,6 +110,9 @@
 <canvas id="progressChart" width="800" height="300" aria-hidden="true" hidden></canvas>
 <details><summary>Ver datos de la gráfica</summary><ul id="progressValues"></ul></details>
 <details><summary>Mediciones guardadas</summary><ul id="measureHistory"></ul></details>
+<h3>Sesiones de entrenamiento</h3>
+<p id="progressSessionsEmpty" class="muted">Todavía no hay sesiones del plan guardadas.</p>
+<ul id="progressSessions"></ul>
 <h3>Guardar y sincronizar mis datos</h3>
 <p>Las mediciones, el perfil de alimentación, las rutinas y las sesiones guardadas quedan en este navegador. Para llevarlos a otro dispositivo, conecta tu repositorio privado y pulsa <strong>Subir datos</strong>. En el otro dispositivo conecta el mismo repositorio y pulsa <strong>Cargar datos</strong>. Los borradores de sesiones se guardan en el dispositivo hasta que guardes la sesión.</p>
 <details><summary>Conectar repositorio privado</summary>
@@ -1087,6 +1090,19 @@ function drawProgress(points,unit) {
   points.forEach(([day,value]) => { ctx.beginPath(); ctx.arc(x(day),y(value),4,0,2*Math.PI); ctx.fill(); });
 }
 function renderProgress() {
+  const sessions = state.data.history.filter(session => Array.isArray(session.steps));
+  $('progressSessionsEmpty').hidden = sessions.length > 0;
+  $('progressSessions').replaceChildren(...sessions.map(session => {
+    const planned = exerciseDays.find(([day,title]) => session.title === day + ' · ' + title);
+    const done = session.steps.length;
+    const recordedTotal = session.plannedExercises;
+    const total = Number.isInteger(recordedTotal) && recordedTotal >= done ? recordedTotal : planned?.[3].length;
+    const count = total && total >= done ? done + ' de ' + total + ' ejercicios' : done + (done === 1 ? ' ejercicio' : ' ejercicios');
+    const date = dateFormat.format(new Date(localDay(new Date(session.date))));
+    const row = element('li');
+    row.append(element('strong',session.title),element('p',date + ' · ' + session.place + ' · ' + count));
+    return row;
+  }));
   const trends = exerciseTrends();
   const selected = metricSelect.value || 'weight';
   const options = [['weight','Peso corporal'],['waist','Cintura'],...[...trends].map(([key,trend]) => [key,trend.label])];
@@ -1291,9 +1307,9 @@ $('finishPlan').onclick = () => {
     const step = draft[index];
     return step && (step.done || setSummary(step)) ? [{variant:step.variant,series:step.series,log:step.log}] : [];
   });
-  if (!completed.length || (completed.length < steps.length && !confirm('¿Guardar la sesión con los ejercicios que registraste?'))) return;
-  const session = {id:crypto.randomUUID(),title:day + ' · ' + title,place,date:new Date().toISOString(),steps:completed};
-  if (change({...state.data,history:[session,...state.data.history]},'Sesión guardada.')) {
+  if (!completed.length) return;
+  const session = {id:crypto.randomUUID(),title:day + ' · ' + title,place,date:new Date().toISOString(),steps:completed,plannedExercises:steps.length};
+  if (change({...state.data,history:[session,...state.data.history]},'Sesión guardada en Avance. ' + completed.length + ' de ' + steps.length + ' ejercicios.')) {
     delete drafts[place + ':' + planDay];
     persistDraft();
     renderPlan();
